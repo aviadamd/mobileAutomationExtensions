@@ -91,7 +91,7 @@ public class MutualSwipeGestureExtensions extends MobileWebDriverManager {
 //                    log.info("swipeToElement pass to swipe to " + flow + ", after " + i + " times");
 //                    break;
 //                }
-                this.swipeScreenVoid(true, direction);
+                this.swipe(true, direction, flow);
             }
         } catch (Exception e) {
             log.error("swipeToElement general error");
@@ -109,7 +109,7 @@ public class MutualSwipeGestureExtensions extends MobileWebDriverManager {
 //                    findElement = true;
 //                    break;
 //                }
-                this.swipeScreenVoid(true, direction);
+                this.swipe(true, direction, flow);
             }
         } catch (Exception e) {
             log.error("swipeToElement general error");
@@ -119,15 +119,15 @@ public class MutualSwipeGestureExtensions extends MobileWebDriverManager {
     }
 
     @Description("swipe ")
-    public void swipe(ScrollDirection direction, int times) {
+    public void swipeOverTimes(ScrollDirection direction, int times, String desc) {
         for (int i = 1; i < times; i++) {
-            this.swipe(true, direction);
+            this.swipe(true, direction, desc);
         }
     }
 
     @Description("swipe ")
     @SuppressWarnings("rawtypes")
-    public void swipe(boolean activate, ScrollDirection direction) {
+    public void swipe(boolean activate, ScrollDirection direction, String desc) {
         if (activate) {
 
            TouchAction isPassScroll = null;
@@ -141,35 +141,35 @@ public class MutualSwipeGestureExtensions extends MobileWebDriverManager {
                 switch (direction) {
                     case UP_LARGE:
                         pointOptionEnd = PointOption.point(dimension.width / 2, dimension.height - this.edgeBorder);
-                        isPassScroll = this.swipe(pointOptionStart, pointOptionEnd);
+                        isPassScroll = this.swipeGeneral(pointOptionStart, pointOptionEnd);
                         break;
                     case DOWN_LARGE:
                         pointOptionEnd = PointOption.point(dimension.width / 2, this.edgeBorder);
-                        isPassScroll = this.swipe(pointOptionStart, pointOptionEnd);
+                        isPassScroll = this.swipeGeneral(pointOptionStart, pointOptionEnd);
                         break;
                     case UP:
                         pointOptionEnd = PointOption.point(dimension.width / 2, (dimension.height / 2) + (dimension.height / 2) / scrollDownDivider);
-                        isPassScroll = this.swipe(pointOptionStart, pointOptionEnd);
+                        isPassScroll = this.swipeGeneral(pointOptionStart, pointOptionEnd);
                         break;
                     case DOWN:
                         pointOptionEnd = PointOption.point(dimension.width / 2, (dimension.height / 2) - (dimension.height / 2) / scrollDownDivider);
-                        isPassScroll = this.swipe(pointOptionStart, pointOptionEnd);
+                        isPassScroll = this.swipeGeneral(pointOptionStart, pointOptionEnd);
                         break;
                     case DOWN_LITTLE:
                         pointOptionEnd = PointOption.point(dimension.width / 2, (dimension.height / 2) - (dimension.height / 2) / scrollABitDivider);
-                        isPassScroll = this.swipe(pointOptionStart, pointOptionEnd);
+                        isPassScroll = this.swipeGeneral(pointOptionStart, pointOptionEnd);
                         break;
                     case UP_LITTLE:
                         pointOptionEnd = PointOption.point(dimension.width / 2, (dimension.height / 2) + (dimension.height / 2) / scrollABitDivider);
-                        isPassScroll = this.swipe(pointOptionStart, pointOptionEnd);
+                        isPassScroll = this.swipeGeneral(pointOptionStart, pointOptionEnd);
                         break;
                     case LEFT:
                         pointOptionEnd = PointOption.point(edgeBorder, dimension.height - 2);
-                        isPassScroll = isAndroidClient() ? swipe(pointOptionStart, pointOptionEnd) : this.swipeLeftToRight(false);
+                        isPassScroll = isAndroidClient() ? swipeGeneral(pointOptionStart, pointOptionEnd) : this.swipeLeftToRight(false);
                         break;
                     case RIGHT:
                         pointOptionEnd = PointOption.point(dimension.width - this.edgeBorder, dimension.height / 2);
-                        isPassScroll = isAndroidClient() ? this.swipe(pointOptionStart, pointOptionEnd) : this.swipeRightToLeft(false);
+                        isPassScroll = isAndroidClient() ? this.swipeGeneral(pointOptionStart, pointOptionEnd) : this.swipeRightToLeft(false);
                         break;
                 }
             } catch (Exception swipeGestureExtensions) {
@@ -182,62 +182,8 @@ public class MutualSwipeGestureExtensions extends MobileWebDriverManager {
         }
     }
 
-    @Description("swipeScreen ")
     @SuppressWarnings("rawtypes")
-    private void swipeScreenVoid(boolean activate, ScrollDirection direction) {
-        if (activate) {
-            try {
-                PointOption pointOptionStart, pointOptionEnd;
-                Dimension dimension = getDriver().manage().window().getSize();
-                pointOptionStart = PointOption.point(dimension.width / 2, dimension.height / 2);
-                int scrollDownDivider = 2, scrollABitDivider = 10;
-
-                switch (direction) {
-                    case UP_LARGE:
-                        pointOptionEnd = PointOption.point(dimension.width / 2, dimension.height - this.edgeBorder);
-                        this.swipe(pointOptionStart, pointOptionEnd);
-                        break;
-                    case DOWN_LARGE:
-                        pointOptionEnd = PointOption.point(dimension.width / 2, this.edgeBorder);
-                        this.swipe(pointOptionStart, pointOptionEnd);
-                        break;
-                    case UP:
-                        pointOptionEnd = PointOption.point(dimension.width / 2, (dimension.height / 2) + (dimension.height / 2) / scrollDownDivider);
-                        this.swipe(pointOptionStart, pointOptionEnd);
-                        break;
-                    case DOWN:
-                        pointOptionEnd = PointOption.point(dimension.width / 2, (dimension.height / 2) - (dimension.height / 2) / scrollDownDivider);
-                        this.swipe(pointOptionStart, pointOptionEnd);
-                        break;
-                    case DOWN_LITTLE:
-                        pointOptionEnd = PointOption.point(dimension.width / 2, (dimension.height / 2) - (dimension.height / 2) / scrollABitDivider);
-                        this.swipe(pointOptionStart, pointOptionEnd);
-                        break;
-                    case UP_LITTLE:
-                        pointOptionEnd = PointOption.point(dimension.width / 2, (dimension.height / 2) + (dimension.height / 2) / scrollABitDivider);
-                        this.swipe(pointOptionStart, pointOptionEnd);
-                        break;
-                    case LEFT:
-                        pointOptionEnd = PointOption.point(edgeBorder, dimension.height - 2);
-                        if (isAndroidClient()) {
-                            swipe(pointOptionStart, pointOptionEnd);
-                        } else this.swipeLeftToRight(false);
-                        break;
-                    case RIGHT:
-                        pointOptionEnd = PointOption.point(dimension.width - this.edgeBorder, dimension.height / 2);
-                        if (isAndroidClient()) {
-                            this.swipe(pointOptionStart, pointOptionEnd);
-                        } else this.swipeRightToLeft(false);
-                        break;
-                }
-            } catch (Exception swipeGestureExtensions) {
-                log.info("swipeGestureExtensions error ex: " + swipeGestureExtensions.getMessage());
-            }
-        }
-    }
-
-    @SuppressWarnings("rawtypes")
-    private TouchAction swipe(PointOption pointOptionStart, PointOption pointOptionEnd) {
+    private TouchAction swipeGeneral(PointOption pointOptionStart, PointOption pointOptionEnd) {
         TouchAction action = null;
 
         try {

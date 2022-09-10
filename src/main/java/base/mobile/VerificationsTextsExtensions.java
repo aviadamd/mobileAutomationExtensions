@@ -13,7 +13,6 @@ import java.util.List;
 @Slf4j
 public class VerificationsTextsExtensions extends MobileWebDriverManager {
 
-    @Description("compare text")
     public boolean compareText(boolean equals, String actual, String expected, Status logStatus) {
         boolean status;
         try {
