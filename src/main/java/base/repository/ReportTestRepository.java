@@ -10,7 +10,15 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class  ReportTestRepository {
+public class ReportTestRepository {
+
+    private static ReportTestRepository mInstance = null;
+    public static ReportTestRepository getInstance() {
+        if (mInstance == null) {
+            mInstance = new ReportTestRepository();
+        }
+        return mInstance;
+    }
 
     private static List<Reasons> reportTestRepositoryList = new ArrayList<>();
     public List<Reasons> getAllObjects() { return reportTestRepositoryList; }

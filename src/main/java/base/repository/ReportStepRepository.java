@@ -13,6 +13,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ReportStepRepository {
 
+    private static ReportStepRepository mInstance = null;
+    public static ReportStepRepository getInstance() {
+        if (mInstance == null) {
+            mInstance = new ReportStepRepository();
+        }
+        return mInstance;
+    }
+
     private static List<ReasonsStep> reportTestRepositoryList = new ArrayList<>();
     public List<ReasonsStep> getAllObjects() { return reportTestRepositoryList; }
     public void save(ReasonsStep testReportDto) { reportTestRepositoryList.add(testReportDto); }

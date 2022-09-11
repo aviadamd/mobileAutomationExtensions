@@ -5,14 +5,13 @@ import com.mongodb.BasicDBObject;
 
 public class ReasonsStep extends BasicDBObject {
 
-    static final long serialVersionUID = 2105061907470199595L;
+    static final long serialVersionUID = 2105061917470199595L;
     private Status status;
-    private final String testId;
+    private String testId;
     private String stepId;
     private TestCategory category;
     private TestSeverity severity;
     private String description;
-
 
     public Status getStatus() { return status; }
     public String getTestId() { return testId; }
@@ -20,8 +19,6 @@ public class ReasonsStep extends BasicDBObject {
     public TestCategory getCategory() { return category; }
     public TestSeverity getSeverity() { return severity; }
     public String getDescription() { return description; }
-
-
 
     public ReasonsStep(
             Status status, String testId, String stepId,
@@ -34,6 +31,7 @@ public class ReasonsStep extends BasicDBObject {
         this.description = description;
     }
 
+    public void setTestId(String testId) { this.testId = testId; }
     public void setStepId(String stepId) { this.stepId = stepId; }
     public void setStatus(Status status) {
         this.status = status;

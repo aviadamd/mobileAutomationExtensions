@@ -1,6 +1,7 @@
 package base.reports.testFilters;
 
 public enum TestCategory {
+    PASS("PASS"),
     NONE("NONE"),
     APPIUM("Appium"),
     APPIUM_SERVER("Appium Server"),

@@ -3,15 +3,12 @@ package base;
 import base.driversManager.AndroidWebDriverManager;
 import base.driversManager.IosWebDriverManager;
 import base.driversManager.MobilePlatformType;
-import base.repository.mongo.adapters.ReasonsDtoAdapter;
-import base.repository.mongo.adapters.ReasonsStepDtoAdapter;
+import base.repository.ReportStepRepository;
+import base.repository.ReportTestRepository;
 import base.reports.testFilters.*;
-import com.aventstack.extentreports.ExtentTest;
-import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.CodeLanguage;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
-import com.mongodb.client.model.Filters;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
@@ -23,10 +20,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import static base.reports.extentManager.ExtentReportManager.extentTest;
+
 @Slf4j
 public class MobileWebDriverManager extends MobileExtensionContext {
 
-    public static ExtentTest extentTest;
     private static WebDriver setDriver;
     private static AppiumDriverLocalService server;
     private DesiredCapabilities capabilities = new DesiredCapabilities();
@@ -37,7 +35,8 @@ public class MobileWebDriverManager extends MobileExtensionContext {
     }
 
     public boolean isAndroidClient() {
-        return getProperty().getPlatformType().equals("ANDROID");
+        return getProperty()
+                .getPlatformType().equals("ANDROID");
     }
 
     /**
@@ -45,9 +44,9 @@ public class MobileWebDriverManager extends MobileExtensionContext {
      * @return appium driver
      */
     public WebDriver getDriver() {
-        boolean isInitServer = this.isInitServerCheck();
-        if (!isInitServer) {
-            this.reportTest(this.failReportDto(Status.FAIL, TestCategory.APPIUM_SERVER, "fail init appium server"));
+        if (server == null) {
+            server = this.initServer();
+            server.start();
         }
 
         if (setDriver == null) {
@@ -70,14 +69,6 @@ public class MobileWebDriverManager extends MobileExtensionContext {
         return setDriver;
     }
 
-    private boolean isInitServerCheck() {
-        if (server == null) {
-            server = this.initServer();
-            server.start();
-        }
-        return false;
-    }
-
     /*** on after all or after each */
     public void tearDown() {
         if (this.getDriver() != null) this.getDriver().quit();
@@ -85,36 +76,34 @@ public class MobileWebDriverManager extends MobileExtensionContext {
     }
 
     public void reportTest(Reasons reportTestDto) {
-        reportTestRepository().save(reportTestDto);
-        mongoInstance.deleteElement(Filters.eq("_id", reportTestDto.getTestId()));
-        mongoInstance.insertElement(ReasonsDtoAdapter.toDocument(reportTestDto));
+        ReportTestRepository.getInstance().save(reportTestDto);
+        extentTest.log(reportTestDto.getTestStatus(), "step id" + ", description " + reportTestDto.getDescription());
+        if (reportTestDto.getTestStatus() == Status.FAIL || reportTestDto.getTestStatus() == Status.SKIP) {
+            Assert.fail(reportTestDto.getTestStatus().toString() + "," + reportTestDto);
+        }
+    }
 
+    public void reportTest(Reasons reportTestDto, CodeLanguage codeLanguage) {
+        ReportTestRepository.getInstance().save(reportTestDto);
+        extentTest.log(reportTestDto.getTestStatus(), MarkupHelper.createCodeBlock(reportTestDto.getDescription(), codeLanguage));
         if (reportTestDto.getTestStatus() == Status.FAIL || reportTestDto.getTestStatus() == Status.SKIP) {
             Assert.fail(reportTestDto.getTestStatus().toString() + "," + reportTestDto);
         }
     }
 
     public void reportStepTest(ReasonsStep reportStepDto) {
-        reportStepRepository().save(reportStepDto);
-        mongoInstance.deleteElement(Filters.eq("_id", reportStepDto.getTestId()));
-        mongoInstance.insertElement(ReasonsStepDtoAdapter.toDocument(reportStepDto));
-
-        extentTest.log(reportStepDto.getStatus(), reportStepDto.toString());
+        ReportStepRepository.getInstance().save(reportStepDto);
+        extentTest.log(reportStepDto.getStatus(), "step id" + reportStepDto.getStepId() + ", description " + reportStepDto.getDescription());
         if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
-            extentTest.log(reportStepDto.getStatus(), MediaEntityBuilder.createScreenCaptureFromPath("extent.png").build());
-            Assert.fail(reportStepDto.getStatus().toString() + "," + reportStepDto);
+            Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
         }
     }
 
     public void reportStepTest(ReasonsStep reportStepDto, CodeLanguage codeLanguage) {
-        reportStepRepository().save(reportStepDto);
-        mongoInstance.deleteElement(Filters.eq("_id", reportStepDto.getTestId()));
-        mongoInstance.insertElement(ReasonsStepDtoAdapter.toDocument(reportStepDto));
-
-        extentTest.log(reportStepDto.getStatus(), MarkupHelper.createCodeBlock(reportStepDto.toString(), codeLanguage));
+        ReportStepRepository.getInstance().save(reportStepDto);
+        extentTest.log(reportStepDto.getStatus(), MarkupHelper.createCodeBlock(reportStepDto.getDescription(), codeLanguage));
         if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
-            extentTest.log(reportStepDto.getStatus(), MediaEntityBuilder.createScreenCaptureFromPath("extent.png").build());
-            Assert.fail(reportStepDto.getStatus().toString() + "," + reportStepDto);
+            Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
         }
     }
 

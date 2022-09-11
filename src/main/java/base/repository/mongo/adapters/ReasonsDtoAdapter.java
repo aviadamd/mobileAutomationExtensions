@@ -20,6 +20,17 @@ public class ReasonsDtoAdapter extends BasicDBObject {
                 .append("reason", reasons.getDescription()));
     }
 
+    public static Document toDocumentWithSteps(final Reasons reasons) {
+        return DocumentAdapter.toDocument(reasons
+                .append("status", reasons.getTestStatus().getName())
+                .append("_id", reasons.getTestId())
+                .append("testName", reasons.getTestName())
+                .append("category", reasons.getCategory().getText())
+                .append("severity", reasons.getSeverity().getText())
+                .append("reason", reasons.getDescription())
+                .append("reasonSteps", reasons.getReasonsStep().toString()));
+    }
+
     public static List<Document> toDocuments(final List<Reasons> reportTestDto) {
         return reportTestDto
                 .stream()

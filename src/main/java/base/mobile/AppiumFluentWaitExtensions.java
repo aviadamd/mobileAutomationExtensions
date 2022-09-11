@@ -22,17 +22,17 @@ public class AppiumFluentWaitExtensions extends MobileWebDriverManager {
 
     private final Clock clock;
     private final Sleeper sleeper;
-    private ExpectedCondition<WebElement> expectedCondition;
     private Duration pollingEvery;
     private Duration withPollingStrategy;
     private Status status = Status.FAIL;
 
-    public AppiumFluentWait<WebDriver> getFluentWaitObject() {
-        return new AppiumFluentWait<>(
-                getDriver(),
-                this.clock,
-                this.sleeper
-        );
+    public AppiumFluentWait<WebDriver> appiumFluentWait() {
+        AppiumFluentWait<WebDriver> appiumFluentWait = new AppiumFluentWait<>(getDriver());
+        appiumFluentWait
+                .withTimeout(this.withPollingStrategy)
+                .pollingEvery(this.pollingEvery)
+                .ignoreAll(this.errors);
+        return appiumFluentWait;
     }
 
     private ArrayList<Class<? extends Exception>> errors = new ArrayList<>(asList(
@@ -85,13 +85,9 @@ public class AppiumFluentWaitExtensions extends MobileWebDriverManager {
      */
     public boolean isGetElement(WebElement element, String desc) {
         String eleName = "", error = "";
-
-        AppiumFluentWait<WebDriver> appiumFluentWait = new AppiumFluentWait<>(getDriver());
-        appiumFluentWait.withTimeout(this.withPollingStrategy).pollingEvery(this.pollingEvery).ignoreAll(this.errors);
-
         try {
             eleName = element.toString() != null ? element.toString() : "";
-            appiumFluentWait.until(elementToBeClickable(element));
+            appiumFluentWait().until(elementToBeClickable(element));
             log.info("isGetPageWith: " + eleName + ", element name. with description " + desc + " pass ");
             return true;
         } catch (RuntimeException rtEx) {
@@ -119,13 +115,9 @@ public class AppiumFluentWaitExtensions extends MobileWebDriverManager {
      */
     public boolean isGetElement(By element, String desc) {
         String eleName = "", error = "";
-
-        AppiumFluentWait<WebDriver> appiumFluentWait = new AppiumFluentWait<>(getDriver());
-        appiumFluentWait.withTimeout(this.withPollingStrategy).pollingEvery(this.pollingEvery).ignoreAll(this.errors);
-
         try {
             eleName = element.toString() != null ? element.toString() : "";
-            appiumFluentWait.until(elementToBeClickable(element));
+            appiumFluentWait().until(elementToBeClickable(element));
             log.info("isGetPageWith: " + eleName + ", element name. with description " + desc + " pass ");
             return true;
         } catch (RuntimeException rtEx) {
@@ -148,7 +140,7 @@ public class AppiumFluentWaitExtensions extends MobileWebDriverManager {
     private void errorTable(String eleName, String desc) {
         final String logPrint = desc + " wait to "+ eleName + " fail";
         if (this.status == Status.FAIL || this.status == Status.SKIP) {
-           reportStepTest(new ReasonsStep(Status.FAIL,"","", TestCategory.NONE, TestSeverity.NONE, logPrint));
+           reportStepTest(new ReasonsStep(this.status,"","", TestCategory.NONE, TestSeverity.NONE, logPrint));
         } else log.debug(desc + logPrint);
     }
 }

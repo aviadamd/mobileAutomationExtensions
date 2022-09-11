@@ -2,6 +2,7 @@ package base.repository.mongo.notReactive;
 
 import base.repository.MongoBase;
 import base.repository.MongoConnection;
+import base.repository.ReportTestRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import java.util.Map;
 public class MongoCollectionRepoImpl implements MongoCollectionRepo {
 
     private final MongoBase mongoBase;
-
     public MongoCollectionRepoImpl(MongoConnection mongoConnection, String collectionName) {
         this.mongoBase = new MongoBase(mongoConnection, collectionName);
     }

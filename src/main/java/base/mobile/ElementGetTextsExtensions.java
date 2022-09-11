@@ -207,7 +207,7 @@ public class ElementGetTextsExtensions extends MobileWebDriverManager {
      */
     private WebElement getElement(By by) {
         AppiumFluentWaitExtensions appiumFluentWaitExtensions = new AppiumFluentWaitExtensions();
-        return appiumFluentWaitExtensions.getFluentWaitObject().until(e -> getDriver().findElement(by));
+        return appiumFluentWaitExtensions.appiumFluentWait().until(e -> getDriver().findElement(by));
     }
 
     /**

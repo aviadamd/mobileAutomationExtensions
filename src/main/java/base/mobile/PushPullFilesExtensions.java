@@ -86,7 +86,7 @@ public class PushPullFilesExtensions extends MobileWebDriverManager {
             }
 
             if (highBarNavigation != HighBarNavigation.IGNORE) {
-                clickElementExtensions.clickBy(By.xpath("//*[@text='" + highBarNavigation.getName() + "']"));
+                clickElementExtensions.clickElementBy(4,By.xpath("//*[@text='" + highBarNavigation.getName() + "']"),"");
             }
 
             String name;
@@ -96,7 +96,7 @@ public class PushPullFilesExtensions extends MobileWebDriverManager {
                     for (WebElement element : items) {
                         name = elementGetTextsExtensions.getValue(element, null);
                         if (verificationsTextsExtensions.isTextEquals(name, fileMatch, INFO)) {
-                            if (this.isClickOnFind) clickElementExtensions.click(element);
+                            if (this.isClickOnFind) clickElementExtensions.clickElement(4,element,"");
                             find = true;
                             break;
                         }

@@ -1,71 +1,78 @@
 package base.reports.extentManager;
 
+import base.MobileWebDriverManager;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
-import com.aventstack.extentreports.reporter.configuration.Theme;
 import com.aventstack.extentreports.reporter.configuration.ViewName;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
-public class ExtentReportManager {
+public class ExtentReportManager extends MobileWebDriverManager {
 
-    private ExtentTest extentTest;
-    private boolean reOrderReportCategories;
-    private ExtentSparkReporter sparkReporter;
-    private List<ViewName> viewNamesArray;
-    private final ExtentReports extentReports;
+    public static ExtentTest extentTest;
+    private static ExtentReports extentReports;
+    private static ExtentSparkReporter sparkReporter;
 
-    public ExtentTest getExtentTest() {
-        return this.extentTest;
+    public static void initReports() {
+        extentReports = new ExtentReports();
+        sparkReporter = new ExtentSparkReporter(getProperty().getExtentSparkPath())
+                .viewConfigurer()
+                .viewOrder()
+                .as(new ViewName[]{
+                        ViewName.DASHBOARD,
+                        ViewName.TEST,
+                        ViewName.AUTHOR,
+                        ViewName.DEVICE,
+                        ViewName.EXCEPTION,
+                        ViewName.LOG
+                })
+                .apply();
+        extentReports.attachReporter(sparkReporter);
+        loadReportConfiguration(getProperty().getReportJsonTemplatePath());
     }
 
-    public ExtentReportManager() {
-        this.extentReports = new ExtentReports();
+    public static void createTest(String testName) {
+        extentTest = extentReports.createTest(testName);
+        extentTest.assignDevice(getProperty().getDeviceName());
     }
 
-    public ExtentReportManager setViewReportCategoriesOrder(List<ViewName> viewNamesArray) {
-        this.viewNamesArray = viewNamesArray;
-        return this;
+    public static void flushReports() {
+        ExtentSparkReporter sparkFailReporter = new ExtentSparkReporter("target/SparkFail.html").filter().statusFilter().as(new Status[]{Status.FAIL}).apply();
+        ExtentSparkReporter sparkSkipReporter = new ExtentSparkReporter("target/SparkSkip.html").filter().statusFilter().as(new Status[]{Status.SKIP}).apply();
+        ExtentSparkReporter sparkPassReporter = new ExtentSparkReporter("target/SparkPass.html").filter().statusFilter().as(new Status[]{Status.PASS}).apply();
+        extentReports.attachReporter(sparkFailReporter);
+        extentReports.attachReporter(sparkSkipReporter);
+        extentReports.attachReporter(sparkPassReporter);
+        extentReports.flush();
     }
 
-    public ExtentReportManager setDeviceName(String deviceName) {
-        this.extentTest.assignDevice(deviceName);
-        return this;
+    public static void screenScreenShot(WebDriver driver, Status status) {
+        if (driver != null) {
+            try {
+                String path = "target/screenShots/image.png";
+                File source = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                FileUtils.copyFile(source, new File("target/screenShots/image.png"));
+                extentTest.log(status, MediaEntityBuilder.createScreenCaptureFromPath(path).build());
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
     }
 
-    public ExtentReportManager setReportConfiguration(String date, String path) {
+    private static void loadReportConfiguration(String path) {
         try {
             sparkReporter.loadJSONConfig(new File(path));
         } catch (IOException ioException) {
-            sparkReporter.config().setTheme(Theme.STANDARD);
-            sparkReporter.config().setReportName("Test Report");
-            sparkReporter.config().setDocumentTitle("Test report " + date);
+           //
         }
-        return this;
     }
 
-    public ExtentReportManager setReOrderCategories(boolean reOrderCategories) {
-        this.reOrderReportCategories = reOrderCategories;
-        return this;
-    }
-
-    public ExtentReportManager createTest(String testName) {
-        this.extentTest = extentReports.createTest(testName);
-        return this;
-    }
-
-    public ExtentReportManager initSparkReporter(String reportPath) {
-        this.sparkReporter = new ExtentSparkReporter(reportPath);
-        if (this.reOrderReportCategories) {
-            this.sparkReporter
-                    .viewConfigurer()
-                    .viewOrder()
-                    .as(this.viewNamesArray)
-                    .apply();
-        }
-        this.extentReports.attachReporter(this.sparkReporter);
-        return this;
-    }
 }

@@ -1,6 +1,7 @@
 package base.reports.testFilters;
 
 public enum TestSeverity {
+    PASS("PASS"),
     NONE("NONE"),
     LOW("LOW"),
     MIDDLE("MIDDLE"),
