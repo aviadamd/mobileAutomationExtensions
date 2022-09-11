@@ -19,6 +19,7 @@ import org.testng.ITestResult;
 import java.util.*;
 import static base.reports.extentManager.ExtentReportManager.extentTest;
 import static base.staticData.MobileRegexConstants.SAVE_NUMERIC_CHARS;
+import static com.aventstack.extentreports.MediaEntityBuilder.createScreenCaptureFromBase64String;
 
 @SuppressWarnings("deprecation")
 public class MobileListener extends MobileWebDriverManager implements ITestListener {
@@ -62,7 +63,9 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         Reasons reasons = new Reasons(Status.FAIL, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is fail");
         String stepPrint = "test id " + reasons.getTestId() + ", test status " + reasons.getTestStatus().getName() + "".toUpperCase();
         extentTest.log(Status.FAIL, MarkupHelper.createLabel(stepPrint, ExtentColor.RED));
+        extentTest.log(Status.FAIL, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver())).build());
         this.updateTestStatus(reasons, testId, methodTestName, Status.FAIL);
+        extentTest.log(Status.FAIL, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace())));
     }
 
     @Override
@@ -72,7 +75,10 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         Reasons reasons = new Reasons(Status.SKIP, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is skip");
         String stepPrint = "test id " + reasons.getTestId() + ", test status " + reasons.getTestStatus().getName() + "".toUpperCase();
         extentTest.log(Status.SKIP, MarkupHelper.createLabel(stepPrint, ExtentColor.GREEN));
+        extentTest.log(Status.SKIP, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver())).build());
+        ExtentReportManager.screenshot(getDriver());
         this.updateTestStatus(reasons, testId, methodTestName, Status.SKIP);
+        extentTest.log(Status.SKIP, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace())));
     }
 
     @Override
@@ -88,6 +94,7 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
 
     public void updateTestStatus(Reasons reasons, String testId, String methodTestName, Status status) {
         Optional<Reasons> reasonsStep = ReportTestRepository.getInstance().findObjectById(testId);
+
         if (reasonsStep.isPresent()) {
             List<ReasonsStep> reasonsStepList = ReportStepRepository.getInstance().getAllObjects();
             if (!reasonsStepList.isEmpty()) {

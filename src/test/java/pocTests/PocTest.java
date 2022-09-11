@@ -37,7 +37,7 @@ public class PocTest extends StepFlowExtensions {
         this.stepFlow.setTestId("123456")
                 .setStep("1","load login page", Status.FAIL)
                 .step(action -> {
-                    action.clickBy(10, By.id(ANDROID_ID + "login_user_name_view_automation"),"login base edit text");
+                    action.clickBy(10, By.id(ANDROID_ID + "login_user_iew_automation"),"login base edit text");
                 })
                 .setStep("2","click on edit text", Status.FAIL)
                 .step(action -> {

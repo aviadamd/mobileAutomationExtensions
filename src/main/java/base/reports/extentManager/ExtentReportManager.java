@@ -5,15 +5,20 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.markuputils.ExtentColor;
+import com.aventstack.extentreports.markuputils.Markup;
+import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.ViewName;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.testng.ITestResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ExtentReportManager extends MobileWebDriverManager {
 
@@ -55,6 +60,7 @@ public class ExtentReportManager extends MobileWebDriverManager {
     }
 
     public static void screenScreenShot(WebDriver driver, Status status) {
+
         if (driver != null) {
             try {
                 String path = "target/screenShots/image.png";
@@ -65,6 +71,35 @@ public class ExtentReportManager extends MobileWebDriverManager {
                 ioException.printStackTrace();
             }
         }
+
+
+    }
+
+    public static String screenshot(WebDriver driver) {
+        if (driver != null) {
+            TakesScreenshot ts = (TakesScreenshot) driver;
+            String source = ts.getScreenshotAs(OutputType.BASE64);
+            return "data:image/jpg;base64, " + source;
+        }
+        return "";
+    }
+
+    public static Markup createExpend(String titleExpend, String bodyDesc) {
+        return MarkupHelper.createLabel(
+                "<details>"
+                        + "<summary>"
+                        + "<b>"
+                        + "<font color="
+                        + "red>"
+                        + ""+titleExpend+" :click to open details"
+                        + "</font>"
+                        + "</b> \n"
+                        + "</summary>"
+                        + bodyDesc.replace(",", "<br>")
+                        + "</details> \n"
+                        + "</summary>",
+                ExtentColor.GREEN
+        );
     }
 
     private static void loadReportConfiguration(String path) {
