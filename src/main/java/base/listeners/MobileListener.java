@@ -11,6 +11,7 @@ import base.reports.testFilters.*;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
+import com.aventstack.extentreports.reporter.configuration.ViewName;
 import com.mongodb.client.model.Filters;
 import org.springframework.context.annotation.Description;
 import org.testng.ITestContext;
@@ -27,6 +28,14 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
     //before all
     @Override
     public void onStart(ITestContext context) {
+        ExtentReportManager.setReportOrder(new ArrayList<>(Arrays.asList(
+                ViewName.DASHBOARD,
+                ViewName.TEST,
+                ViewName.AUTHOR,
+                ViewName.DEVICE,
+                ViewName.EXCEPTION,
+                ViewName.LOG
+        )));
         ExtentReportManager.initReports();
         mongoInstance = new MongoCollectionRepoImpl(new MongoConnection(
                 getProperty().getMongoDbStringConnection(),
@@ -52,7 +61,8 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         String testId = methodTestName.replaceAll(SAVE_NUMERIC_CHARS,"");
         Reasons reasons = new Reasons(Status.PASS, testId, methodTestName, TestCategory.PASS, TestSeverity.PASS, methodTestName + " is pass");
         String stepPrint = "test id " + reasons.getTestId() + ", test status " + reasons.getTestStatus().getName() + "".toUpperCase();
-        extentTest.log(Status.INFO, MarkupHelper.createLabel(stepPrint, ExtentColor.BLUE));
+        extentTest.log(Status.PASS, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver())).build());
+        extentTest.log(Status.PASS, MarkupHelper.createLabel(stepPrint, ExtentReportManager.extentPassColor));
         this.updateTestStatus(reasons, testId, methodTestName, Status.PASS);
     }
 
@@ -62,10 +72,10 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         String testId = methodTestName.replaceAll(SAVE_NUMERIC_CHARS,"");
         Reasons reasons = new Reasons(Status.FAIL, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is fail");
         String stepPrint = "test id " + reasons.getTestId() + ", test status " + reasons.getTestStatus().getName() + "".toUpperCase();
-        extentTest.log(Status.FAIL, MarkupHelper.createLabel(stepPrint, ExtentColor.RED));
+        extentTest.log(Status.FAIL, MarkupHelper.createLabel(stepPrint, ExtentReportManager.extentFailColor));
         extentTest.log(Status.FAIL, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver())).build());
         this.updateTestStatus(reasons, testId, methodTestName, Status.FAIL);
-        extentTest.log(Status.FAIL, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace())));
+        extentTest.log(Status.FAIL, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace()), ExtentReportManager.extentFailColor));
     }
 
     @Override
@@ -74,11 +84,10 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         String testId = methodTestName.replaceAll(SAVE_NUMERIC_CHARS,"");
         Reasons reasons = new Reasons(Status.SKIP, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is skip");
         String stepPrint = "test id " + reasons.getTestId() + ", test status " + reasons.getTestStatus().getName() + "".toUpperCase();
-        extentTest.log(Status.SKIP, MarkupHelper.createLabel(stepPrint, ExtentColor.GREEN));
+        extentTest.log(Status.SKIP, MarkupHelper.createLabel(stepPrint, ExtentReportManager.extentSkipColor));
         extentTest.log(Status.SKIP, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver())).build());
-        ExtentReportManager.screenshot(getDriver());
         this.updateTestStatus(reasons, testId, methodTestName, Status.SKIP);
-        extentTest.log(Status.SKIP, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace())));
+        extentTest.log(Status.SKIP, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace()), ExtentReportManager.extentSkipColor));
     }
 
     @Override
@@ -89,6 +98,9 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
     //after all
     @Override
     public void onFinish(ITestContext context) {
+        ExtentReportManager.setExtraReports("target/SparkFail.html", Status.FAIL);
+        ExtentReportManager.setExtraReports("target/SparkPass.html", Status.PASS);
+        ExtentReportManager.setExtraReports("target/SparkSkip.html", Status.SKIP);
         ExtentReportManager.flushReports();
     }
 

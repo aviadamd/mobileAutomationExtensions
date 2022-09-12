@@ -10,38 +10,54 @@ import com.aventstack.extentreports.markuputils.Markup;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.ViewName;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.testng.ITestResult;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+@Slf4j
 public class ExtentReportManager extends MobileWebDriverManager {
 
     public static ExtentTest extentTest;
+    public static ExtentColor extentFailColor = ExtentColor.RED;
+    public static ExtentColor extentSkipColor = ExtentColor.GREEN;
+    public static ExtentColor extentPassColor = ExtentColor.BLUE;
     private static ExtentReports extentReports;
     private static ExtentSparkReporter sparkReporter;
+
+    private static List<ViewName> setViewNames = new ArrayList<>(Arrays.asList(
+            ViewName.DASHBOARD,
+            ViewName.TEST,
+            ViewName.AUTHOR,
+            ViewName.DEVICE,
+            ViewName.EXCEPTION,
+            ViewName.LOG
+    ));
+
+    public static void setReportOrder(List<ViewName> viewNames) {
+        setViewNames = new ArrayList<>();
+        setViewNames.addAll(viewNames);
+    }
 
     public static void initReports() {
         extentReports = new ExtentReports();
         sparkReporter = new ExtentSparkReporter(getProperty().getExtentSparkPath())
                 .viewConfigurer()
                 .viewOrder()
-                .as(new ViewName[]{
-                        ViewName.DASHBOARD,
-                        ViewName.TEST,
-                        ViewName.AUTHOR,
-                        ViewName.DEVICE,
-                        ViewName.EXCEPTION,
-                        ViewName.LOG
-                })
+                .as(setViewNames)
                 .apply();
         extentReports.attachReporter(sparkReporter);
-        loadReportConfiguration(getProperty().getReportJsonTemplatePath());
+        try {
+            sparkReporter.loadJSONConfig(new File(getProperty().getReportJsonTemplatePath()));
+        } catch (IOException ioException) {
+            log.error("loadReportConfiguration error " +ioException.getMessage());
+        }
     }
 
     public static void createTest(String testName) {
@@ -50,29 +66,16 @@ public class ExtentReportManager extends MobileWebDriverManager {
     }
 
     public static void flushReports() {
-        ExtentSparkReporter sparkFailReporter = new ExtentSparkReporter("target/SparkFail.html").filter().statusFilter().as(new Status[]{Status.FAIL}).apply();
-        ExtentSparkReporter sparkSkipReporter = new ExtentSparkReporter("target/SparkSkip.html").filter().statusFilter().as(new Status[]{Status.SKIP}).apply();
-        ExtentSparkReporter sparkPassReporter = new ExtentSparkReporter("target/SparkPass.html").filter().statusFilter().as(new Status[]{Status.PASS}).apply();
-        extentReports.attachReporter(sparkFailReporter);
-        extentReports.attachReporter(sparkSkipReporter);
-        extentReports.attachReporter(sparkPassReporter);
         extentReports.flush();
     }
 
-    public static void screenScreenShot(WebDriver driver, Status status) {
-
-        if (driver != null) {
-            try {
-                String path = "target/screenShots/image.png";
-                File source = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-                FileUtils.copyFile(source, new File("target/screenShots/image.png"));
-                extentTest.log(status, MediaEntityBuilder.createScreenCaptureFromPath(path).build());
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-        }
-
-
+    public static void setExtraReports(String reportLocation, Status statusBy) {
+        ExtentSparkReporter reporter = new ExtentSparkReporter(reportLocation)
+                .filter()
+                .statusFilter()
+                .as(new Status[]{statusBy})
+                .apply();
+        extentReports.attachReporter(reporter);
     }
 
     public static String screenshot(WebDriver driver) {
@@ -84,7 +87,7 @@ public class ExtentReportManager extends MobileWebDriverManager {
         return "";
     }
 
-    public static Markup createExpend(String titleExpend, String bodyDesc) {
+    public static Markup createExpend(String titleExpend, String bodyDesc, ExtentColor extentColor) {
         return MarkupHelper.createLabel(
                 "<details>"
                         + "<summary>"
@@ -98,16 +101,7 @@ public class ExtentReportManager extends MobileWebDriverManager {
                         + bodyDesc.replace(",", "<br>")
                         + "</details> \n"
                         + "</summary>",
-                ExtentColor.GREEN
+                extentColor
         );
     }
-
-    private static void loadReportConfiguration(String path) {
-        try {
-            sparkReporter.loadJSONConfig(new File(path));
-        } catch (IOException ioException) {
-           //
-        }
-    }
-
 }
