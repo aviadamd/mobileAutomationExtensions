@@ -61,7 +61,7 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         String testId = methodTestName.replaceAll(SAVE_NUMERIC_CHARS,"");
         Reasons reasons = new Reasons(Status.PASS, testId, methodTestName, TestCategory.PASS, TestSeverity.PASS, methodTestName + " is pass");
         String stepPrint = "test id " + reasons.getTestId() + ", test status " + reasons.getTestStatus().getName() + "".toUpperCase();
-        extentTest.log(Status.PASS, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver())).build());
+        extentTest.log(Status.PASS, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver()), stepPrint).build());
         extentTest.log(Status.PASS, MarkupHelper.createLabel(stepPrint, ExtentReportManager.extentPassColor));
         this.updateTestStatus(reasons, testId, methodTestName, Status.PASS);
     }
@@ -73,7 +73,7 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         Reasons reasons = new Reasons(Status.FAIL, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is fail");
         String stepPrint = "test id " + reasons.getTestId() + ", test status " + reasons.getTestStatus().getName() + "".toUpperCase();
         extentTest.log(Status.FAIL, MarkupHelper.createLabel(stepPrint, ExtentReportManager.extentFailColor));
-        extentTest.log(Status.FAIL, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver())).build());
+        extentTest.log(Status.FAIL, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver()), stepPrint).build());
         this.updateTestStatus(reasons, testId, methodTestName, Status.FAIL);
         extentTest.log(Status.FAIL, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace()), ExtentReportManager.extentFailColor));
     }
@@ -85,7 +85,7 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         Reasons reasons = new Reasons(Status.SKIP, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is skip");
         String stepPrint = "test id " + reasons.getTestId() + ", test status " + reasons.getTestStatus().getName() + "".toUpperCase();
         extentTest.log(Status.SKIP, MarkupHelper.createLabel(stepPrint, ExtentReportManager.extentSkipColor));
-        extentTest.log(Status.SKIP, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver())).build());
+        extentTest.log(Status.SKIP, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(getDriver()), stepPrint).build());
         this.updateTestStatus(reasons, testId, methodTestName, Status.SKIP);
         extentTest.log(Status.SKIP, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace()), ExtentReportManager.extentSkipColor));
     }

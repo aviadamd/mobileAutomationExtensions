@@ -33,13 +33,12 @@ public class AndroidWebDriverManager extends MobileWebDriverManager {
 
     private DesiredCapabilities initCapabilities() {
         DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("appium:app", "C:/Users/Lenovo/IdeaProjects/mobileExtensions/src/main/resources/application.apk");
-        capabilities.setCapability("appium:appPackage", "com.ideomobile.hapoalim");
+        capabilities.setCapability("appium:app", getProperty().getAppPath());
+        capabilities.setCapability("appium:appPackage", getProperty().getAppNamePackage());
         capabilities.setCapability("appium:automationName", "UiAutomator2");
-        //capabilities.setCapability("appium:deviceName", getProperty.getDeviceName());
-        capabilities.setCapability("appium:platformVersion","11");
-        capabilities.setCapability("avd", "Pixel_4_API_30");
-        capabilities.setCapability("udid", "Pixel_4_API_30");
+        capabilities.setCapability("appium:platformVersion", getProperty().getDeviceVersion());
+        capabilities.setCapability("avd", getProperty().getDeviceName());
+        capabilities.setCapability("udid", getProperty().getDeviceName());
         capabilities.setCapability("appium:autoGrantPermissions", true);
         capabilities.setCapability("appium:noReset", true);
         if (this.capabilities != null) {

@@ -9,6 +9,7 @@ import java.util.Properties;
 @Slf4j
 public class PropertyConfig {
 
+    private String deviceVersion;
     private String platformType;
     private String remotePlatformType;
     private String localBin;
@@ -38,6 +39,7 @@ public class PropertyConfig {
         } else log.info("set property with: " + key + " and value: " + value);
     }
 
+    public String getDeviceVersion() { return this.deviceVersion; }
     public String getPlatformType() { return this.platformType; }
     public String getRemotePlatformType() { return this.remotePlatformType; }
     public String getLocalBin() { return this.localBin; }
@@ -67,6 +69,7 @@ public class PropertyConfig {
 
         try {
             appProps.load(new FileInputStream(appConfigPath));
+            this.deviceVersion = appProps.getProperty("device.version");
             this.platformType = appProps.getProperty("device.platformType");
             this.remotePlatformType = appProps.getProperty("device.remote.platformType");
             this.localBin = appProps.getProperty("path.localBin");
