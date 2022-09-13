@@ -25,7 +25,7 @@ public class AndroidWebDriverManager extends MobileWebDriverManager {
         try {
             return new AndroidDriver<>(url, this.initCapabilities());
         } catch (Exception appiumEx) {
-            this.reportTest(this.failReportDto(Status.FAIL, TestCategory.DRIVER, appiumEx.getMessage()));
+            this.reportTest(this.failReportDto(Status.FAIL, TestCategory.DRIVER, "fail init android driver " + appiumEx.getMessage()));
         }
         return null;
     }

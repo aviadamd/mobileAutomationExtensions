@@ -13,6 +13,8 @@ import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.Assert;
@@ -77,7 +79,7 @@ public class MobileWebDriverManager extends MobileExtensionContext {
 
     public void reportTest(Reasons reportTestDto) {
         ReportTestRepository.getInstance().save(reportTestDto);
-        extentTest.log(reportTestDto.getTestStatus(), "step id" + ", description " + reportTestDto.getDescription());
+        extentTest.log(reportTestDto.getTestStatus(), "report description: " + reportTestDto.getDescription());
         if (reportTestDto.getTestStatus() == Status.FAIL || reportTestDto.getTestStatus() == Status.SKIP) {
             Assert.fail(reportTestDto.getTestStatus().toString() + "," + reportTestDto);
         }
@@ -93,7 +95,7 @@ public class MobileWebDriverManager extends MobileExtensionContext {
 
     public void reportStepTest(ReasonsStep reportStepDto) {
         ReportStepRepository.getInstance().save(reportStepDto);
-        extentTest.log(reportStepDto.getStatus(), "step id" + reportStepDto.getStepId() + ", description " + reportStepDto.getDescription());
+        extentTest.log(reportStepDto.getStatus(), "description: " + reportStepDto.getDescription());
         if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
             Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
         }
@@ -158,5 +160,18 @@ public class MobileWebDriverManager extends MobileExtensionContext {
         } catch (InterruptedException var3) {
             log.error("sleep error " + var3.getMessage());
         }
+    }
+
+    public static String screenshot() {
+        try {
+            if (setDriver != null) {
+                TakesScreenshot ts = (TakesScreenshot) setDriver;
+                String source = ts.getScreenshotAs(OutputType.BASE64);
+                return "data:image/jpg;base64, " + source;
+            }
+        } catch (Exception exception) {
+            log.error("screen shot error " + exception.getMessage());
+        }
+        return "";
     }
 }

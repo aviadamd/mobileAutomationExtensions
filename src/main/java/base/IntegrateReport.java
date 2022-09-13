@@ -2,12 +2,12 @@ package base;
 
 import base.reports.testFilters.ReasonsStep;
 
-public class IntegrateReportStepWithAction<T> {
+public class IntegrateReport<T> {
 
     private final T action;
     private final ReasonsStep reasonsStep;
 
-    public IntegrateReportStepWithAction(ReasonsStep reasonsStep, T action) {
+    public IntegrateReport(ReasonsStep reasonsStep, T action) {
         this.reasonsStep = reasonsStep;
         this.action = action;
     }

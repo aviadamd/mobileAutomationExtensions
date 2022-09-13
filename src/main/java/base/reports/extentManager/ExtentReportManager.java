@@ -78,23 +78,14 @@ public class ExtentReportManager extends MobileWebDriverManager {
         extentReports.attachReporter(reporter);
     }
 
-    public static String screenshot(WebDriver driver) {
-        if (driver != null) {
-            TakesScreenshot ts = (TakesScreenshot) driver;
-            String source = ts.getScreenshotAs(OutputType.BASE64);
-            return "data:image/jpg;base64, " + source;
-        }
-        return "";
-    }
-
     public static Markup createExpend(String titleExpend, String bodyDesc, ExtentColor extentColor) {
         return MarkupHelper.createLabel(
                 "<details>"
                         + "<summary>"
                         + "<b>"
                         + "<font color="
-                        + "red>"
-                        + ""+titleExpend+" :click to open details"
+                        + "white>"
+                        + ""+titleExpend+": click to open for more details "
                         + "</font>"
                         + "</b> \n"
                         + "</summary>"

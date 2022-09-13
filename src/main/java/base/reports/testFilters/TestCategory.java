@@ -1,6 +1,6 @@
 package base.reports.testFilters;
 
-public enum TestCategory {
+public enum  TestCategory {
     PASS("PASS"),
     NONE("NONE"),
     APPIUM("Appium"),

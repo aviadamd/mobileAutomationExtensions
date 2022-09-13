@@ -23,7 +23,7 @@ public class IosWebDriverManager extends MobileWebDriverManager {
         try {
             return new IOSDriver<>(url, this.initCapabilities());
         } catch (Exception appiumEx) {
-            this.reportTest(this.failReportDto(Status.FAIL, TestCategory.DRIVER, appiumEx.getMessage()));
+            this.reportTest(this.failReportDto(Status.FAIL, TestCategory.DRIVER, "fail init ios driver " + appiumEx.getMessage()));
         }
         return null;
     }

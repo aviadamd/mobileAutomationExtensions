@@ -1,13 +1,16 @@
 package base.mobile;
 
+import base.IntegrateReport;
 import base.MobileWebDriverManager;
+import base.reports.testFilters.ReasonsStep;
+import base.reports.testFilters.TestCategory;
+import base.reports.testFilters.TestSeverity;
 import com.aventstack.extentreports.Status;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class ApplicationLauncherExtensions extends MobileWebDriverManager {
 
     private String setAppActivity = "";
+    public boolean isReportFromClass = true;
     private String setApplicationToNavigate = "";
 
     public ApplicationLauncherExtensions setAppActivity(String setAppActivity) {
@@ -20,26 +23,35 @@ public class ApplicationLauncherExtensions extends MobileWebDriverManager {
         return this;
     }
 
-    public void launch(LaunchAppOptions appOptions, String packageNameValidation) {
-        InfraStructuresExtensions infraStructuresExtensions = new InfraStructuresExtensions();
-        VerificationsTextsExtensions verificationsTextsExtensions = new VerificationsTextsExtensions();
+    public ApplicationLauncherExtensions setIsReportFromClass(boolean isReportFromClass) {
+        this.isReportFromClass = isReportFromClass;
+        return this;
+    }
+
+    public IntegrateReport<ApplicationLauncherExtensions> launch(LaunchAppOptions appOptions, String packageNameValidation) {
+        ReasonsStep step;
+
         switch (appOptions) {
             case ACTIVATE_WITH_PACKAGE_NAME: {
                 if (!this.setApplicationToNavigate.isEmpty())
-                    infraStructuresExtensions.activateApp(this.setApplicationToNavigate);
+                    new InfraStructuresExtensions().activateApp(this.setApplicationToNavigate);
                 break;
             }
             case ACTIVATE_WITH_PACKAGE_NAME_AND_ACTIVITY: {
                 if (!this.setApplicationToNavigate.isEmpty() && !this.setAppActivity.isEmpty())
-                    infraStructuresExtensions.startActivity(this.setApplicationToNavigate, this.setAppActivity);
+                    new InfraStructuresExtensions().startActivity(this.setApplicationToNavigate, this.setAppActivity);
                 break;
             }
         }
 
-        String getCurrent = infraStructuresExtensions.getCurrentAppPackage();
-        if (verificationsTextsExtensions.isTextEquals(getCurrent, packageNameValidation, Status.INFO)) {
-            log.info("pass launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
-        } else log.info("fail launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
+        String getCurrent = new InfraStructuresExtensions().getCurrentAppPackage();
+        if (new VerificationsTextsExtensions().isTextEquals(getCurrent, packageNameValidation, Status.INFO)) {
+            step = new ReasonsStep(Status.PASS,"","", TestCategory.NONE, TestSeverity.NONE, "pass launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
+        } else {
+            step = new ReasonsStep(Status.FAIL,"","", TestCategory.NONE, TestSeverity.NONE, "pass launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
+            if (this.isReportFromClass) this.reportStepTest(step);
+        }
+        return new IntegrateReport<>(step, this);
     }
 
     public void returnToBaseApplication() {

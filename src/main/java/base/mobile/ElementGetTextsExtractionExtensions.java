@@ -2,18 +2,17 @@ package base.mobile;
 
 import base.MobileWebDriverManager;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.WebElement;
-import java.util.List;
 import static base.staticData.MobileRegexConstants.*;
 import static base.staticData.MobileStringsUtilities.formatStringToNumber;
-import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.math.NumberUtils.toDouble;
 
 @Slf4j
 public class ElementGetTextsExtractionExtensions extends MobileWebDriverManager {
 
     private int elementTimeOut = 4;
-    private List<String> elementsAttr = asList("text","label");
+    private Pair<String,String> elementsAttr = Pair.of("text", "label");
 
     private String asLetters = "";
     private String asNumbers = "";
@@ -32,7 +31,7 @@ public class ElementGetTextsExtractionExtensions extends MobileWebDriverManager 
         return this;
     }
 
-    public ElementGetTextsExtractionExtensions setElementsAttr(List<String> elementsAttr) {
+    public ElementGetTextsExtractionExtensions setElementsAttr(Pair<String,String> elementsAttr) {
         this.elementsAttr = elementsAttr;
         return this;
     }
@@ -44,10 +43,6 @@ public class ElementGetTextsExtractionExtensions extends MobileWebDriverManager 
      */
     public ElementGetTextsExtractionExtensions extractNumber(WebElement element) {
         String noteText = this.getValueFrom(element);
-
-        String eleToString = element.toString() != null ? element.toString() : "";
-        if (noteText.isEmpty()) log.error("fail take text from " +  eleToString);
-
         String formatAsString = formatStringToNumber(noteText,",", SAVE_NUMERIC_CHARS_WITH_DOT);
         this.toDoubleFormat = toDouble(formatAsString,0.0);
         this.asStringFormat = String.valueOf(this.toDoubleFormat);
@@ -67,12 +62,7 @@ public class ElementGetTextsExtractionExtensions extends MobileWebDriverManager 
      */
     public ElementGetTextsExtractionExtensions extractNumber(WebElement element, NumberOption numberOption, double by) {
         String elementText = this.getValueFrom(element);
-
-        String eleToString = element.toString() != null ? element.toString() : "";
-        if (elementText.isEmpty()) log.error("fail take text from " +  eleToString);
-
         String formatAsString = formatStringToNumber(elementText,",", SAVE_NUMERIC_CHARS_WITH_DOT);
-
         this.toDoubleFormat = toDouble(formatAsString,0.0);
         this.asStringFormat = String.valueOf(this.toDoubleFormat);
         this.asLengthFormat = this.asStringFormat.length();
@@ -115,6 +105,7 @@ public class ElementGetTextsExtractionExtensions extends MobileWebDriverManager 
     private String getValueFrom(WebElement element) {
         return new ElementGetTextsExtensions()
                 .setElementTo(this.elementTimeOut)
-                .getValue(element, this.elementsAttr);
+                .getValue(element, this.elementsAttr)
+                .proceed();
     }
 }

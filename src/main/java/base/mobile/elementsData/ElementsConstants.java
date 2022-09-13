@@ -1,9 +1,22 @@
 package base.mobile.elementsData;
 
 import lombok.Data;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.List;
+
+import static base.MobileExtensionContext.getProperty;
+import static base.mobile.elementsData.ElementsAttributes.AndroidElementsAttributes.TEXT;
+import static base.mobile.elementsData.ElementsAttributes.SharedElementTextAttr.*;
+import static base.mobile.elementsData.ElementsAttributes.SharedElementTextAttr.NAME;
+import static java.util.Arrays.asList;
 
 @Data
 public class ElementsConstants {
+
+    private static boolean isAndroidClient() {
+        return getProperty().getPlatformType().equals("ANDROID");
+    }
 
     public static class ClientPackages {
         public static final String IOS = "EP.hapoalim.hapoalim";
@@ -147,5 +160,48 @@ public class ElementsConstants {
             public static final String COMMAND_TO_END_OF_VIEW = "new UiScrollable(new UiSelector().scrollable(true)).flingToEnd(10)";
             public static final String COMMAND_TO_START_OF_VIEW = "new UiScrollable(new UiSelector().scrollable(true)).flingBackward()";
         }
+    }
+
+
+    public static List<String> clientAttr() {
+        return isAndroidClient() ? asList(TEXT.getTag(), CONTENT_DESC.getTag()) : asList(LABEL.getTag(), VALUE.getTag(), NAME.getTag());
+    }
+
+    /**
+     * @param attributes options
+     * @param name free text to search
+     * @return string of element attribute options
+     */
+    public static String xpathWithOptions(
+            Pair<ElementsAttributes.IosElementsAttributes,
+                    ElementsAttributes.AndroidElementsAttributes> attributes, String name) {
+        return isAndroidClient() ?
+                "//*[@"+attributes.getRight().getTag()+"='"+name+"']" :
+                "//*[@"+attributes.getRight().getTag()+"=\""+name+"\"]";
+    }
+
+    /**
+     * @param name free text to search
+     * @return string of element attribute options
+     */
+    public static String xpathWithOptions(String name) {
+        return isAndroidClient() ?
+                "//*[@"+ ElementsAttributes.AndroidElementsAttributes.TEXT.getTag()+"='"+name+"']" :
+                "//*[@"+ ElementsAttributes.IosElementsAttributes.LABEL.getTag()+"='"+name+"' " +
+                        "or @"+ ElementsAttributes.IosElementsAttributes.VALUE.getTag()+"='"+name+"' " +
+                        "or @"+ ElementsAttributes.IosElementsAttributes.NAME.getTag()+"='"+name+"' " +
+                        "or @"+ ElementsAttributes.IosElementsAttributes.LABEL.getTag()+"=\""+name+"\" " +
+                        "or @"+ ElementsAttributes.IosElementsAttributes.VALUE.getTag()+"=\""+name+"\" " +
+                        "or @"+ ElementsAttributes.IosElementsAttributes.NAME.getTag()+"=\""+name+"\"]";
+    }
+
+    /**
+     * @param name free text to search
+     * @return string of element attribute options
+     */
+    public static String xpathClassName(String name) {
+        return isAndroidClient()
+                ? "//*[@"+ ElementsAttributes.AndroidElementsAttributes.CLASS.getTag()+"'"+name+"']"
+                : "//*[@"+ ElementsAttributes.IosElementsAttributes.CLASS.getTag()+"=\""+name+"\"]";
     }
 }

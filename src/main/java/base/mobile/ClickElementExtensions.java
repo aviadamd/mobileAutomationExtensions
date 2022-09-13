@@ -1,6 +1,8 @@
 package base.mobile;
 
+import base.IntegrateReport;
 import base.MobileWebDriverManager;
+import base.mobile.elementsData.ElementsConstants;
 import base.reports.testFilters.ReasonsStep;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
@@ -17,7 +19,6 @@ import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
 import java.time.Duration;
 import static io.appium.java_client.touch.LongPressOptions.longPressOptions;
 
@@ -27,16 +28,11 @@ public class ClickElementExtensions extends MobileWebDriverManager {
     private String step = "";
     private int timeOut = 15;
     private Status status = Status.FAIL;
-    private boolean isReportFromClass = true;
 
-    public ClickElementExtensions setElementTimeOut(int timeOut) {
-        this.timeOut = timeOut;
-        return this;
-    }
-
-    public ClickElementExtensions setReportFromClass(boolean isReportFromClass) {
-        this.isReportFromClass = isReportFromClass;
-        return this;
+    private AppiumFluentWaitExtensions appiumFluentWaitExtensions() {
+        return new AppiumFluentWaitExtensions()
+                .withGeneralPollingWaitStrategy(Duration.ofSeconds(this.timeOut))
+                .pollingEvery(Duration.ofMillis(500));
     }
 
     public ClickElementExtensions setStep(String step) {
@@ -49,43 +45,50 @@ public class ClickElementExtensions extends MobileWebDriverManager {
         return this;
     }
 
-    /**
-     * @param timeOut set an time out for flexible scenarios
-     * @param by locator the actual element
-     */
-    public ReasonsStep clickElementBy(int timeOut, By by, String desc) {
+    public ClickElementExtensions setElementTimeOut(int timeOut) {
+        this.timeOut = timeOut;
+        return this;
+    }
+
+    public IntegrateReport<ClickElementExtensions> clickElementBy(By by, String desc) {
+        ReasonsStep step;
+        try {
+           this.appiumFluentWaitExtensions()
+                    .appiumFluentWait()
+                    .until(ExpectedConditions.elementToBeClickable(by))
+                    .click();
+            step = this.reasonsStep(Status.PASS, this.step, TestCategory.DRIVER, TestSeverity.NONE, "pass click on " + desc);
+        } catch (Exception exception) {
+            step = this.reasonsStep(
+                    this.status,
+                    this.step,
+                    TestCategory.DRIVER,
+                    TestSeverity.NONE, desc + " fail to click on element " + exception.getMessage());
+        }
+
+        this.reportStepTest(step);
+        return new IntegrateReport<>(step, this);
+    }
+
+    public IntegrateReport<ClickElementExtensions> clickElement(WebElement element, String desc) {
         ReasonsStep step;
         try {
             new AppiumFluentWaitExtensions()
                     .withGeneralPollingWaitStrategy(Duration.ofSeconds(timeOut))
                     .pollingEvery(Duration.ofMillis(500))
                     .appiumFluentWait()
-                    .until(ExpectedConditions.elementToBeClickable(by))
+                    .until(ExpectedConditions.elementToBeClickable(element))
                     .click();
-            step = this.reasonsStep(Status.PASS, this.step, TestCategory.DRIVER, TestSeverity.NONE, desc);
+            step = this.reasonsStep(Status.PASS, this.step, TestCategory.DRIVER, TestSeverity.NONE, "pass click on " + desc);
         } catch (Exception exception) {
-            step = this.reasonsStep(this.status, this.step, TestCategory.DRIVER, TestSeverity.NONE, desc + " fail " + exception.getMessage());
-            if (this.isReportFromClass) {
-                this.reportStepTest(step);
-            }
+            step = this.reasonsStep(
+                    this.status,
+                    this.step,
+                    TestCategory.DRIVER,
+                    TestSeverity.NONE, desc + " fail to click on element " + exception.getMessage());
         }
-        return step;
-    }
-
-    /**
-     * @param timeOut set an time out for flexible scenarios
-     * @param element locator the actual element
-     */
-    public void clickElement(int timeOut, WebElement element, String desc) {
-        try {
-            AppiumFluentWaitExtensions appiumFluentWaitExtensions = new AppiumFluentWaitExtensions();
-            appiumFluentWaitExtensions.withGeneralPollingWaitStrategy(Duration.ofSeconds(timeOut));
-            if (appiumFluentWaitExtensions.isGetElement(element, desc)) {
-                element.click();
-            }
-        } catch (Exception exception) {
-            log.error("failed click at element ");
-        }
+        this.reportStepTest(step);
+        return new IntegrateReport<>(step, this);
     }
 
     public void tapElement(int timeOut, WebElement element) {
@@ -139,7 +142,7 @@ public class ClickElementExtensions extends MobileWebDriverManager {
             Rectangle rectangle1 = element.getRect();
             int refEleMidX1 = rectangle1.getX();
             int refEleMidY1 = rectangle1.getY();
-            TouchAction action = (new TouchAction((AppiumDriver) getDriver()))
+            (new TouchAction((AppiumDriver) getDriver()))
                     .press(PointOption.point(refEleMidX1, refEleMidY1))
                     .waitAction(WaitOptions.waitOptions(Duration.ofMillis(50)))
                     .release()
@@ -156,7 +159,7 @@ public class ClickElementExtensions extends MobileWebDriverManager {
             appiumFluentWaitExtensions.withGeneralPollingWaitStrategy(Duration.ofSeconds(timeOut));
             if (appiumFluentWaitExtensions.isGetElement(element,"")) {
                 Point point = this.getElementCords(element);
-                TouchAction action = (new TouchAction((AppiumDriver) getDriver()))
+                (new TouchAction((AppiumDriver) getDriver()))
                         .press(PointOption.point(point))
                         .release()
                         .perform()
@@ -182,33 +185,36 @@ public class ClickElementExtensions extends MobileWebDriverManager {
     }
 
     @SuppressWarnings("rawtypes")
-    public void longPressElement(WebElement element, long millis) {
+    public IntegrateReport<ClickElementExtensions> longPressElement(WebElement element, long millis) {
+        ReasonsStep step;
         try {
-            TouchAction action = (new TouchAction((AppiumDriver) getDriver()))
+            (new TouchAction((AppiumDriver) getDriver()))
                     .longPress(longPressOptions()
                             .withElement(ElementOption.element(element))
                             .withDuration(Duration.ofMillis(millis)))
                     .release()
                     .perform();
+            step = this.reasonsStep(Status.PASS, this.step, TestCategory.DRIVER, TestSeverity.NONE, "pass tap");
         } catch (Exception var4) {
-            log.error("failed longPressElement");
+            step = this.reasonsStep(this.status, this.step, TestCategory.DRIVER, TestSeverity.NONE, "fail tap");
         }
+        return new IntegrateReport<>(step, this);
     }
 
-    public ReasonsStep clickByString(String name, int timeOut) {
+    public IntegrateReport<ClickElementExtensions> clickByString(String name, int timeOut) {
         ReasonsStep step;
         try {
-            String generateXpath = new ElementGetTextsExtensions().xpathWithOptions(name);
+            String generateXpath = ElementsConstants.xpathWithOptions(name);
             WebElement element = new ElementsSearchExtensions()
                     .overRideWebDriverWait(Duration.ofSeconds(timeOut), Duration.ofMillis(500))
                     .findElementBy(By.xpath(generateXpath));
-            this.clickElement(this.timeOut, element, name);
+            this.clickElement(element, name);
             step = this.reasonsStep(Status.PASS, this.step, TestCategory.DRIVER, TestSeverity.NONE, "pass click");
         } catch (Exception exception) {
             step = this.reasonsStep(Status.FAIL, this.step, TestCategory.DRIVER, TestSeverity.NONE, "fail click");
         }
 
-        return step;
+        return new IntegrateReport<>(step, this);
     }
 
     private ReasonsStep reasonsStep(Status status, String step, TestCategory category, TestSeverity severity, String description) {

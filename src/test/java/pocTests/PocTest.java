@@ -2,9 +2,6 @@ package pocTests;
 
 import base.StepFlowExtensions;
 import base.listeners.MobileListener;
-import base.reports.testFilters.TestCategory;
-import base.reports.testFilters.TestSeverity;
-import com.aventstack.extentreports.Status;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.context.annotation.Description;
@@ -18,11 +15,13 @@ public class PocTest extends StepFlowExtensions {
 
     private StepFlowExtensions stepFlow;
     public static final String ANDROID_ID = "com.ideomobile.hapoalim:id/";
+    private final String loginEle = ANDROID_ID + "login_user_name_view_automation";
 
     @BeforeTest
     public void init() {
         DesiredCapabilities capabilities = new DesiredCapabilities();
-        this.addCapabilitiesExtra(capabilities).getDriver();
+        this.addCapabilitiesExtra(capabilities);
+        this.getDriver();
         this.stepFlow = new StepFlowExtensions();
     }
 
@@ -34,14 +33,19 @@ public class PocTest extends StepFlowExtensions {
     @Test
     @Description("123456 first test poc")
     public void firstTestPoc() {
-        this.stepFlow.setTestId("123456")
-                .setStep("1","load login page", Status.FAIL)
-                .step(action -> {
-                    action.clickBy(10, By.id(ANDROID_ID + "login_user_iew_automation"),"login base edit text");
-                })
-                .setStep("2","click on edit text", Status.FAIL)
-                .step(action -> {
-                    action.clickBy(10, By.id(ANDROID_ID + "login_user_name_view_automation"),"login base edit text");
+        this.stepFlow
+                .step("1", "load login page", action -> {
+                    action.clickElementExtensions
+                            .setStep("1")
+                            .clickElementBy(By.id(loginEle), "login user name")
+                            .proceed()
+                            .setStep("2")
+                            .clickElementBy(By.id(loginEle),"login user");
+                }).step("3", "load login page", action -> {
+                    action.clickElementExtensions
+                            .setStep("3")
+                            .clickElementBy(By.id(loginEle), "login user name");
                 });
+
     }
 }
