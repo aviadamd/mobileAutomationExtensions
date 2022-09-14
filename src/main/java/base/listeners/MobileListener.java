@@ -28,14 +28,6 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
     //before all
     @Override
     public void onStart(ITestContext context) {
-        ExtentReportManager.setReportOrder(new ArrayList<>(Arrays.asList(
-                ViewName.DASHBOARD,
-                ViewName.TEST,
-                ViewName.AUTHOR,
-                ViewName.DEVICE,
-                ViewName.EXCEPTION,
-                ViewName.LOG
-        )));
         ExtentReportManager.initReports();
         mongoInstance = new MongoCollectionRepoImpl(new MongoConnection(
                 getProperty().getMongoDbStringConnection(),
@@ -46,10 +38,9 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
     //before test
     @Override
     public void onTestStart(ITestResult iTestResult) {
-        String testName = iTestResult.getMethod().getMethod().getName();
         String methodTestName = iTestResult.getMethod().getMethod().getAnnotation(Description.class).value();
         String testId = methodTestName.replaceAll(SAVE_NUMERIC_CHARS,"");
-        ExtentReportManager.createTest(testName);
+        ExtentReportManager.createTest(methodTestName);
         extentTest.log(Status.INFO, "test " + methodTestName + " start");
         Reasons reasons = new Reasons(Status.PASS, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is started");
         mongoInstance.insertElement(ReasonsDtoAdapter.toDocument(reasons));

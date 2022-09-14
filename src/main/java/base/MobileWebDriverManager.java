@@ -63,9 +63,6 @@ public class MobileWebDriverManager extends MobileExtensionContext {
                             .addCapabilitiesExtra(this.capabilities)
                             .initIosDriver(server.getUrl());
                     break;
-                default: {
-                    this.reportTest(this.failReportDto(Status.FAIL, TestCategory.DRIVER, "no driver type was given from " + getProperty().getPlatformType()));
-                }
             }
         }
         return setDriver;

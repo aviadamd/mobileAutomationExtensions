@@ -1,6 +1,9 @@
 package base;
 
 import base.mobile.*;
+import base.reports.testFilters.Reasons;
+import base.reports.testFilters.TestCategory;
+import base.reports.testFilters.TestSeverity;
 import com.aventstack.extentreports.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Description;
