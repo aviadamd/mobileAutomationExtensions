@@ -1,11 +1,11 @@
-package base;
+package base.driversManager;
 
-import base.driversManager.AndroidWebDriverManager;
-import base.driversManager.IosWebDriverManager;
-import base.driversManager.MobilePlatformType;
+import base.propertyConfig.PropertyConfig;
+import base.reports.extentManager.ExtentLogger;
 import base.repository.ReportStepRepository;
 import base.repository.ReportTestRepository;
 import base.reports.testFilters.*;
+import base.repository.mongo.notReactive.MongoCollectionRepoImpl;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.CodeLanguage;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
@@ -22,12 +22,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import static base.reports.extentManager.ExtentReportManager.extentTest;
-
 @Slf4j
-public class MobileWebDriverManager extends MobileExtensionContext {
-
-    private static WebDriver setDriver;
+public class MobileWebDriverManager {
+    public static MongoCollectionRepoImpl mongoInstance;
+    public static PropertyConfig getProperty() { return new PropertyConfig(); }
     private static AppiumDriverLocalService server;
     private DesiredCapabilities capabilities = new DesiredCapabilities();
 
@@ -37,8 +35,7 @@ public class MobileWebDriverManager extends MobileExtensionContext {
     }
 
     public boolean isAndroidClient() {
-        return getProperty()
-                .getPlatformType().equals("ANDROID");
+        return getProperty().getPlatformType().equals("ANDROID");
     }
 
     /**
@@ -47,25 +44,25 @@ public class MobileWebDriverManager extends MobileExtensionContext {
      */
     public WebDriver getDriver() {
         if (server == null) {
-            server = this.initServer();
+            server = initServer();
             server.start();
         }
 
-        if (setDriver == null) {
+        if (DriverManager.getLocalDriver() == null) {
             switch (getProperty().getPlatformType()) {
                 case MobilePlatformType.ANDROID:
-                    setDriver = new AndroidWebDriverManager()
+                    DriverManager.setLocalDriver(new AndroidWebDriverManager()
                             .addCapabilitiesExtra(this.capabilities)
-                            .initAndroidDriver(server.getUrl());
+                            .initAndroidDriver(server.getUrl()));
                     break;
                 case MobilePlatformType.IOS:
-                    setDriver = new IosWebDriverManager()
+                    DriverManager.setLocalDriver(new IosWebDriverManager()
                             .addCapabilitiesExtra(this.capabilities)
-                            .initIosDriver(server.getUrl());
+                            .initIosDriver(server.getUrl()));
                     break;
             }
         }
-        return setDriver;
+        return DriverManager.getLocalDriver();
     }
 
     /*** on after all or after each */
@@ -74,47 +71,35 @@ public class MobileWebDriverManager extends MobileExtensionContext {
         if (server != null) server.stop();
     }
 
-    public void reportTest(Reasons reportTestDto) {
+    public static void reportTest(Reasons reportTestDto) {
         ReportTestRepository.getInstance().save(reportTestDto);
-        extentTest.log(reportTestDto.getTestStatus(), "report description: " + reportTestDto.getDescription());
+        ExtentLogger.loggerPrint(reportTestDto.getTestStatus(), "report description: " + reportTestDto.getDescription());
         if (reportTestDto.getTestStatus() == Status.FAIL || reportTestDto.getTestStatus() == Status.SKIP) {
             Assert.fail(reportTestDto.getTestStatus().toString() + "," + reportTestDto);
         }
     }
 
-    public void reportTest(Reasons reportTestDto, CodeLanguage codeLanguage) {
+    public static void reportTest(Reasons reportTestDto, CodeLanguage codeLanguage) {
         ReportTestRepository.getInstance().save(reportTestDto);
-        extentTest.log(reportTestDto.getTestStatus(), MarkupHelper.createCodeBlock(reportTestDto.getDescription(), codeLanguage));
+        ExtentLogger.loggerPrint(reportTestDto.getTestStatus(), MarkupHelper.createCodeBlock(reportTestDto.getDescription(), codeLanguage));
         if (reportTestDto.getTestStatus() == Status.FAIL || reportTestDto.getTestStatus() == Status.SKIP) {
             Assert.fail(reportTestDto.getTestStatus().toString() + "," + reportTestDto);
         }
     }
 
-    public void reportStepTest(ReasonsStep reportStepDto) {
+    public static void reportStepTest(ReasonsStep reportStepDto) {
         ReportStepRepository.getInstance().save(reportStepDto);
-        extentTest.log(reportStepDto.getStatus(), "description: " + reportStepDto.getDescription());
+        ExtentLogger.loggerPrint(reportStepDto.getStatus(), "description: " + reportStepDto.getDescription());
         if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
             Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
         }
     }
-
-    public void reportStepTest(ReasonsStep reportStepDto, CodeLanguage codeLanguage) {
+    public static void reportStepTest(ReasonsStep reportStepDto, CodeLanguage codeLanguage) {
         ReportStepRepository.getInstance().save(reportStepDto);
-        extentTest.log(reportStepDto.getStatus(), MarkupHelper.createCodeBlock(reportStepDto.getDescription(), codeLanguage));
+        ExtentLogger.loggerPrint(reportStepDto.getStatus(), MarkupHelper.createCodeBlock(reportStepDto.getDescription(), codeLanguage));
         if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
             Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
         }
-    }
-
-    public Reasons failReportDto(Status status, TestCategory category, String desc) {
-        return new Reasons(
-                status,
-                "Init",
-                "Init",
-                category,
-                TestSeverity.HIGH,
-                desc
-        );
     }
 
     public HashMap<String,String> environment() {
@@ -125,7 +110,7 @@ public class MobileWebDriverManager extends MobileExtensionContext {
         return environment;
     }
 
-    private AppiumDriverLocalService initServer() {
+    private static AppiumDriverLocalService initServer() {
         AppiumServiceBuilder builder = new AppiumServiceBuilder();
         try {
             builder.usingDriverExecutable(new File(getProperty().getNodeJs()))
@@ -134,7 +119,7 @@ public class MobileWebDriverManager extends MobileExtensionContext {
                     .withArgument(GeneralServerFlag.RELAXED_SECURITY)
                     .withStartUpTimeOut(15, TimeUnit.SECONDS);
         } catch (Exception appiumEx) {
-            reportTest(this.failReportDto(Status.FAIL, TestCategory.APPIUM,"fail launch appium server"));
+            reportTest(new Reasons(Status.FAIL,"init","init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail launch appium server"));
         }
         return AppiumDriverLocalService.buildService(builder);
     }
@@ -159,10 +144,10 @@ public class MobileWebDriverManager extends MobileExtensionContext {
         }
     }
 
-    public static String screenshot() {
+    public String screenshot() {
         try {
-            if (setDriver != null) {
-                TakesScreenshot ts = (TakesScreenshot) setDriver;
+            if (this.getDriver() != null) {
+                TakesScreenshot ts = (TakesScreenshot) this.getDriver();
                 String source = ts.getScreenshotAs(OutputType.BASE64);
                 return "data:image/jpg;base64, " + source;
             }

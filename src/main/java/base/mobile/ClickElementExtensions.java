@@ -1,7 +1,7 @@
 package base.mobile;
 
 import base.IntegrateReport;
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import base.mobile.elementsData.ElementsConstants;
 import base.reports.testFilters.ReasonsStep;
 import base.reports.testFilters.TestCategory;

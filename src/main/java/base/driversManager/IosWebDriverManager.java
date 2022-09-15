@@ -1,7 +1,8 @@
 package base.driversManager;
 
-import base.MobileWebDriverManager;
+import base.reports.testFilters.Reasons;
 import base.reports.testFilters.TestCategory;
+import base.reports.testFilters.TestSeverity;
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.IOSMobileCapabilityType;
@@ -23,7 +24,7 @@ public class IosWebDriverManager extends MobileWebDriverManager {
         try {
             return new IOSDriver<>(url, this.initCapabilities());
         } catch (Exception appiumEx) {
-            this.reportTest(this.failReportDto(Status.FAIL, TestCategory.DRIVER, "fail init ios driver " + appiumEx.getMessage()));
+            reportTest(new Reasons(Status.FAIL,"init","init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init ios driver"));
         }
         return null;
     }

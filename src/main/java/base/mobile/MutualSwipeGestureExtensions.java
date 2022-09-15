@@ -1,7 +1,6 @@
 package base.mobile;
 
-import base.MobileWebDriverManager;
-import base.mobile.enums.GetValuesBy;
+import base.driversManager.MobileWebDriverManager;
 import base.mobile.enums.ScrollDirection;
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.AppiumDriver;
@@ -9,7 +8,6 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;

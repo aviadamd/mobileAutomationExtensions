@@ -1,6 +1,6 @@
 package base.mobile;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import base.mobile.elementsData.ElementsConstants.Android;
 import base.mobile.enums.ScrollDirection;
 import org.openqa.selenium.By;

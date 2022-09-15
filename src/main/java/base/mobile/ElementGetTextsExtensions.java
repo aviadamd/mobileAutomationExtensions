@@ -1,7 +1,7 @@
 package base.mobile;
 
 import base.IntegrateReport;
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import base.dateUtils.DateFormatData;
 import base.mobile.elementsData.ElementsConstants;
 import base.mobile.enums.GetValuesBy;

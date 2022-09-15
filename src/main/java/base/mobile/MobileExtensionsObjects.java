@@ -1,6 +1,6 @@
 package base.mobile;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 
 public class MobileExtensionsObjects extends MobileWebDriverManager {
 

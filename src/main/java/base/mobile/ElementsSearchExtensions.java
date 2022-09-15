@@ -1,7 +1,7 @@
 package base.mobile;
 
 import base.CollectionExtensions;
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import base.mobile.enums.DividedList;
 import io.appium.java_client.AppiumFluentWait;
 import lombok.extern.slf4j.Slf4j;

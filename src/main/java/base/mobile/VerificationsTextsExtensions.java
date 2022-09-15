@@ -1,12 +1,12 @@
 package base.mobile;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import base.staticData.MobileStringsUtilities;
 import com.aventstack.extentreports.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.WebElement;
-import org.springframework.context.annotation.Description;
+
 import java.util.ArrayList;
 import java.util.List;
 

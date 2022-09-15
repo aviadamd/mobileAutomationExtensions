@@ -1,7 +1,8 @@
 package base.driversManager;
 
-import base.MobileWebDriverManager;
+import base.reports.testFilters.Reasons;
 import base.reports.testFilters.TestCategory;
+import base.reports.testFilters.TestSeverity;
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.android.AndroidDriver;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class AndroidWebDriverManager extends MobileWebDriverManager {
         try {
             return new AndroidDriver<>(url, this.initCapabilities());
         } catch (Exception appiumEx) {
-            this.reportTest(this.failReportDto(Status.FAIL, TestCategory.DRIVER, "fail init android driver " + appiumEx.getMessage()));
+            reportTest(new Reasons(Status.FAIL,"init","init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver"));
         }
         return null;
     }

@@ -1,6 +1,6 @@
 package base.jsonJacksonExtensions;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import com.aventstack.extentreports.Status;
 import com.fasterxml.jackson.databind.MappingIterator;
 

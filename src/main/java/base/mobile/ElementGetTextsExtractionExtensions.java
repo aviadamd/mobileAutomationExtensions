@@ -1,6 +1,6 @@
 package base.mobile;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.WebElement;

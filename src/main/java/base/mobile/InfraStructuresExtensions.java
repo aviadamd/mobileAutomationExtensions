@@ -1,6 +1,6 @@
 package base.mobile;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import base.mobile.enums.AppState;
 import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.android.Activity;
@@ -10,7 +10,6 @@ import io.appium.java_client.ios.IOSDriver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.ScreenOrientation;
-import org.openqa.selenium.WebElement;
 import org.springframework.context.annotation.Description;
 
 import java.io.BufferedReader;

@@ -1,6 +1,6 @@
 package base.jsonJacksonExtensions;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;

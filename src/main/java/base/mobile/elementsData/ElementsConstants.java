@@ -1,11 +1,9 @@
 package base.mobile.elementsData;
 
+import base.driversManager.MobileWebDriverManager;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.List;
-
-import static base.MobileExtensionContext.getProperty;
 import static base.mobile.elementsData.ElementsAttributes.AndroidElementsAttributes.TEXT;
 import static base.mobile.elementsData.ElementsAttributes.SharedElementTextAttr.*;
 import static base.mobile.elementsData.ElementsAttributes.SharedElementTextAttr.NAME;
@@ -15,7 +13,10 @@ import static java.util.Arrays.asList;
 public class ElementsConstants {
 
     private static boolean isAndroidClient() {
-        return getProperty().getPlatformType().equals("ANDROID");
+        return MobileWebDriverManager
+                .getProperty()
+                .getPlatformType()
+                .equals("ANDROID");
     }
 
     public static class ClientPackages {

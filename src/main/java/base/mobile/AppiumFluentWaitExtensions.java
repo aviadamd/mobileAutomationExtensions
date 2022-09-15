@@ -1,6 +1,6 @@
 package base.mobile;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import base.reports.testFilters.ReasonsStep;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
@@ -8,7 +8,6 @@ import com.aventstack.extentreports.Status;
 import io.appium.java_client.AppiumFluentWait;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Sleeper;
 import java.time.Clock;
 import java.time.Duration;

@@ -1,6 +1,6 @@
 package base.driversManager.appiumEntry;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import base.reports.testFilters.Reasons;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;

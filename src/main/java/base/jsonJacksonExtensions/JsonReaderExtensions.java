@@ -1,6 +1,6 @@
 package base.jsonJacksonExtensions;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;

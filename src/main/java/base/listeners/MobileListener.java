@@ -1,7 +1,7 @@
 package base.listeners;
 
-import base.MobileWebDriverManager;
-import base.reports.extentManager.ExtentReportManager;
+import base.driversManager.MobileWebDriverManager;
+import base.reports.extentManager.ExtentLogger;
 import base.repository.MongoConnection;
 import base.repository.ReportStepRepository;
 import base.repository.ReportTestRepository;
@@ -10,15 +10,12 @@ import base.repository.mongo.notReactive.MongoCollectionRepoImpl;
 import base.reports.testFilters.*;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
-import com.aventstack.extentreports.markuputils.MarkupHelper;
-import com.aventstack.extentreports.reporter.configuration.ViewName;
 import com.mongodb.client.model.Filters;
 import org.springframework.context.annotation.Description;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import java.util.*;
-import static base.reports.extentManager.ExtentReportManager.extentTest;
 import static base.staticData.MobileRegexConstants.SAVE_NUMERIC_CHARS;
 import static com.aventstack.extentreports.MediaEntityBuilder.createScreenCaptureFromBase64String;
 
@@ -28,7 +25,7 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
     //before all
     @Override
     public void onStart(ITestContext context) {
-        ExtentReportManager.initReports();
+        ExtentLogger.initReports();
         mongoInstance = new MongoCollectionRepoImpl(new MongoConnection(
                 getProperty().getMongoDbStringConnection(),
                 getProperty().getMongoDbName()),
@@ -40,8 +37,8 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
     public void onTestStart(ITestResult iTestResult) {
         String methodTestName = iTestResult.getMethod().getMethod().getAnnotation(Description.class).value();
         String testId = methodTestName.replaceAll(SAVE_NUMERIC_CHARS,"");
-        ExtentReportManager.createTest(methodTestName);
-        extentTest.log(Status.INFO, "test " + methodTestName + " start");
+        ExtentLogger.createTest(methodTestName, getProperty().getDeviceName());
+        ExtentLogger.loggerPrint(Status.INFO, "test " + methodTestName + " start");
         Reasons reasons = new Reasons(Status.PASS, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is started");
         mongoInstance.insertElement(ReasonsDtoAdapter.toDocument(reasons));
         ReportTestRepository.getInstance().save(reasons);
@@ -53,7 +50,7 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         String testId = methodTestName.replaceAll(SAVE_NUMERIC_CHARS,"");
         Reasons reasons = new Reasons(Status.PASS, testId, methodTestName, TestCategory.PASS, TestSeverity.PASS, methodTestName + " is pass");
         String stepPrint = "test id " + reasons.getTestId() + ", test " + reasons.getTestStatus().getName();
-        extentTest.log(Status.PASS, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(), stepPrint).build());
+        ExtentLogger.loggerPrint(Status.PASS, createScreenCaptureFromBase64String(screenshot(), stepPrint).build());
         this.updateTestStatus(reasons, testId, methodTestName, Status.PASS);
     }
 
@@ -63,9 +60,9 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         String testId = methodTestName.replaceAll(SAVE_NUMERIC_CHARS,"");
         Reasons reasons = new Reasons(Status.FAIL, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is fail");
         String stepPrint = "test id " + reasons.getTestId() + ", test " + reasons.getTestStatus().getName() + "".toUpperCase();
-        extentTest.log(Status.FAIL, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(), stepPrint).build());
+        ExtentLogger.loggerPrint(Status.FAIL, createScreenCaptureFromBase64String(screenshot(), stepPrint).build());
         this.updateTestStatus(reasons, testId, methodTestName, Status.FAIL);
-        extentTest.log(Status.FAIL, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace()), ExtentColor.BLUE));
+        ExtentLogger.loggerPrint(Status.FAIL,  ExtentLogger.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace()), ExtentColor.BLUE));
     }
 
     @Override
@@ -74,9 +71,9 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
         String testId = methodTestName.replaceAll(SAVE_NUMERIC_CHARS,"");
         Reasons reasons = new Reasons(Status.SKIP, testId, methodTestName, TestCategory.NONE, TestSeverity.NONE, methodTestName + " is skip");
         String stepPrint = "test id " + reasons.getTestId() + ", test " + reasons.getTestStatus().getName() + "".toUpperCase();
-        extentTest.log(Status.SKIP, createScreenCaptureFromBase64String(ExtentReportManager.screenshot(), stepPrint).build());
+        ExtentLogger.loggerPrint(Status.SKIP, createScreenCaptureFromBase64String(screenshot(), stepPrint).build());
         this.updateTestStatus(reasons, testId, methodTestName, Status.SKIP);
-        extentTest.log(Status.SKIP, ExtentReportManager.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace()), ExtentColor.BLUE));
+        ExtentLogger.loggerPrint(Status.SKIP, ExtentLogger.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace()), ExtentColor.BLUE));
     }
 
     @Override
@@ -87,10 +84,11 @@ public class MobileListener extends MobileWebDriverManager implements ITestListe
     //after all
     @Override
     public void onFinish(ITestContext context) {
-        ExtentReportManager.setExtraReports("target/SparkFail.html", Status.FAIL);
-        ExtentReportManager.setExtraReports("target/SparkPass.html", Status.PASS);
-        ExtentReportManager.setExtraReports("target/SparkSkip.html", Status.SKIP);
-        ExtentReportManager.flushReports();
+        ExtentLogger.setExtraReports(Map.of(
+                "target/SparkFail.html", Status.FAIL,
+                "target/SparkSkip.html", Status.SKIP,
+                "target/SparkPass.html", Status.PASS));
+        ExtentLogger.flushReports();
     }
 
     public void updateTestStatus(Reasons reasons, String testId, String methodTestName, Status status) {

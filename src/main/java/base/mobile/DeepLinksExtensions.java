@@ -1,6 +1,6 @@
 package base.mobile;
 
-import base.MobileWebDriverManager;
+import base.driversManager.MobileWebDriverManager;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.context.annotation.Description;
