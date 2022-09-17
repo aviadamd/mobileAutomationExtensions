@@ -1,7 +1,7 @@
-package base.mobile;
+package base.mobile.findElements;
 
 import base.CollectionExtensions;
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import base.mobile.enums.DividedList;
 import io.appium.java_client.AppiumFluentWait;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import static java.util.Arrays.asList;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 
 @Slf4j
-public class ElementsSearchExtensions extends MobileWebDriverManager {
+public class ElementsSearchExtensions extends MobileManager {
 
     private Duration timeOut = Duration.ofSeconds(1);
     private Duration pollingEvery = Duration.ofMillis(500);

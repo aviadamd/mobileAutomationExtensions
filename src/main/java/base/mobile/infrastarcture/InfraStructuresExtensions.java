@@ -1,6 +1,6 @@
-package base.mobile;
+package base.mobile.infrastarcture;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import base.mobile.enums.AppState;
 import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.android.Activity;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import static java.util.Optional.ofNullable;
 
 @Slf4j
-public class InfraStructuresExtensions extends MobileWebDriverManager {
+public class InfraStructuresExtensions extends MobileManager {
 
     @SuppressWarnings("rawtypes")
     public IOSDriver iosDriver() {

@@ -1,6 +1,6 @@
 package base.jsonJacksonExtensions;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import com.aventstack.extentreports.Status;
 import com.fasterxml.jackson.databind.MappingIterator;
 
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class JsonReadAndWriteExtensions extends MobileWebDriverManager {
+public class JsonReadAndWriteExtensions extends MobileManager {
 
     private final JsonReaderExtensions jsonReaderExtensions;
     private final JsonWriterExtensions jsonWriterExtensions;

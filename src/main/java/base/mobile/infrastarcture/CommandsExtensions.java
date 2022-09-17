@@ -1,4 +1,4 @@
-package base.mobile;
+package base.mobile.infrastarcture;
 
 import lombok.Data;
 import org.openqa.selenium.remote.DriverCommand;

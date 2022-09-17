@@ -12,7 +12,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.net.URL;
 
 @Slf4j
-public class IosWebDriverManager extends MobileWebDriverManager {
+public class IosWebDriverManager extends MobileManager {
 
     private DesiredCapabilities capabilities;
     public IosWebDriverManager addCapabilitiesExtra(DesiredCapabilities capabilities) {

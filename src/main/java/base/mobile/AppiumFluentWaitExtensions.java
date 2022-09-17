@@ -1,6 +1,6 @@
 package base.mobile;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import base.reports.testFilters.ReasonsStep;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
@@ -17,14 +17,13 @@ import static java.util.Arrays.asList;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 @Slf4j
-public class AppiumFluentWaitExtensions extends MobileWebDriverManager {
+public class AppiumFluentWaitExtensions extends MobileManager {
 
     private final Clock clock;
     private final Sleeper sleeper;
     private Duration pollingEvery;
     private Duration withPollingStrategy;
     private Status status = Status.FAIL;
-
     public AppiumFluentWait<WebDriver> appiumFluentWait() {
         AppiumFluentWait<WebDriver> appiumFluentWait = new AppiumFluentWait<>(getDriver());
         appiumFluentWait

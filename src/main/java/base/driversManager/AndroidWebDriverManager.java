@@ -3,6 +3,7 @@ package base.driversManager;
 import base.reports.testFilters.Reasons;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
+import base.repository.ReportTestRepository;
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.android.AndroidDriver;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import java.net.URL;
 
 @Slf4j
 @Description("use as a class that extends DriverManager abstract class template")
-public class AndroidWebDriverManager extends MobileWebDriverManager {
+public class AndroidWebDriverManager extends MobileManager {
 
     private DesiredCapabilities capabilities;
     public AndroidWebDriverManager addCapabilitiesExtra(DesiredCapabilities capabilities) {
@@ -23,12 +24,14 @@ public class AndroidWebDriverManager extends MobileWebDriverManager {
     }
 
     public AndroidDriver<WebElement> initAndroidDriver(URL url) {
+        AndroidDriver<WebElement> androidDriver = null;
         try {
-            return new AndroidDriver<>(url, this.initCapabilities());
+            androidDriver = new AndroidDriver<>(url, this.initCapabilities());
+            ReportTestRepository.getInstance().save(new Reasons(Status.PASS,"init","init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver"));
         } catch (Exception appiumEx) {
-            reportTest(new Reasons(Status.FAIL,"init","init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver"));
+            ReportTestRepository.getInstance().save(new Reasons(Status.FAIL,"init","init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver"));
         }
-        return null;
+        return androidDriver;
     }
 
 

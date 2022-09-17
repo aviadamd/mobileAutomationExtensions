@@ -1,6 +1,5 @@
 package base;
 
-import base.driversManager.MobileWebDriverManager;
 import base.mobile.*;
 import base.reports.extentManager.ExtentLogger;
 import com.aventstack.extentreports.Status;
@@ -9,12 +8,13 @@ import org.springframework.context.annotation.Description;
 import java.util.function.Consumer;
 
 @Slf4j
-public class StepFlowExtensions extends MobileWebDriverManager {
+public class StepFlowExtensions extends MobileExtensionsObjects {
 
-    public final MobileExtensionsObjects extensions;
-
+    public MobileExtensionsObjects extensions;
     public StepFlowExtensions() {
-        this.extensions = new MobileExtensionsObjects();
+        if (this.extensions == null) {
+            this.extensions = new MobileExtensionsObjects();
+        }
     }
 
     /**
@@ -23,14 +23,14 @@ public class StepFlowExtensions extends MobileWebDriverManager {
      * @return Consumer this
      */
     @Description("step ")
-    public StepFlowExtensions step(String stepId, String stepDescription, Consumer<MobileExtensionsObjects> consumer) {
+    public StepFlowExtensions steps(String stepId, String stepDescription, Consumer<MobileExtensionsObjects> consumer) {
         try {
-            ExtentLogger.loggerPrint(Status.INFO, "execute step id: " + stepId + ", description: " + stepDescription);
+            ExtentLogger.loggerPrint(Status.INFO, "execute steps id: " + stepId + ", description: " + stepDescription);
             consumer.accept(new MobileExtensionsObjects());
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        ExtentLogger.loggerPrint(Status.INFO, "step id: " + stepId + ", description: " + stepDescription + " finish ");
+        ExtentLogger.loggerPrint(Status.INFO, "execution of steps id: " + stepId + ", description: " + stepDescription + " finish");
         return this;
     }
 }

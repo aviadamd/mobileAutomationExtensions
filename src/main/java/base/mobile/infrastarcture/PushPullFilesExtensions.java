@@ -1,16 +1,16 @@
-package base.mobile;
+package base.mobile.infrastarcture;
 
-import base.driversManager.MobileWebDriverManager;
+import base.mobile.MobileExtensionsObjects;
 import base.mobile.elementsData.ElementsConstants.Android;
 import base.mobile.enums.ScrollDirection;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
-
 import static com.aventstack.extentreports.Status.INFO;
 
-public class PushPullFilesExtensions extends MobileWebDriverManager {
+public class PushPullFilesExtensions extends MobileExtensionsObjects {
 
     private int searchAttempts = 3;
     private boolean isClickOnFind = false;
@@ -70,38 +70,34 @@ public class PushPullFilesExtensions extends MobileWebDriverManager {
     public void fileSystemSearch(HighBarNavigation highBarNavigation, String fileMatch) {
         boolean find = false;
         String nameTemplate = "com.google.android.documentsui:id/nameplate";
-        InfraStructuresExtensions infraStructuresExtensions = new InfraStructuresExtensions();
-        VerificationsTextsExtensions verificationsTextsExtensions = new VerificationsTextsExtensions();
-        ClickElementExtensions clickElementExtensions = new ClickElementExtensions();
-        MutualSwipeGestureExtensions mutualSwipeGestureExtensions = new MutualSwipeGestureExtensions();
-        ElementsSearchExtensions search = new ElementsSearchExtensions();
-        ElementGetTextsExtensions elementGetTextsExtensions = new ElementGetTextsExtensions();
+        MobileExtensionsObjects extensions = new MobileExtensionsObjects();
 
         try {
 
             if (!this.setApplicationToNavigate.isEmpty() && !this.setAppActivity.isEmpty()) {
-                infraStructuresExtensions.startActivity(this.setApplicationToNavigate, this.setAppActivity);
+                extensions.infraStructuresExtensions.startActivity(this.setApplicationToNavigate, this.setAppActivity);
             } else if (!this.setApplicationToNavigate.isEmpty()){
-                infraStructuresExtensions.activateApp(this.setApplicationToNavigate);
+                extensions.infraStructuresExtensions.activateApp(this.setApplicationToNavigate);
             }
 
             if (highBarNavigation != HighBarNavigation.IGNORE) {
-                clickElementExtensions.clickElementBy(By.xpath("//*[@text='" + highBarNavigation.getName() + "']"),"");
+                extensions.clickElementExtensions.clickElement(ExpectedConditions.elementToBeClickable(By.xpath("//*[@text='" + highBarNavigation.getName() + "']")),"");
             }
 
             String name;
-            List<WebElement> items = search.fromManyToNestedMany(By.id(nameTemplate), By.className(Android.ClassType.TEXT_VIEW));
+            List<WebElement> items = extensions.elementsSearchExtensions
+                    .fromManyToNestedMany(By.id(nameTemplate), By.className(Android.ClassType.TEXT_VIEW));
             if (items != null) {
                 for (int i = 1; i < this.searchAttempts; i++) {
                     for (WebElement element : items) {
-                        name = elementGetTextsExtensions.getValue(element, null).proceed();
-                        if (verificationsTextsExtensions.isTextEquals(name, fileMatch, INFO)) {
-                            if (this.isClickOnFind) clickElementExtensions.clickElement(element,"");
+                        name = extensions.elementGetTextsExtensions.getValue(element, null).proceed();
+                        if (extensions.verificationsTextsExtensions.isTextEquals(name, fileMatch, INFO)) {
+                            if (this.isClickOnFind) extensions.clickElementExtensions.clickElement(ExpectedConditions.elementToBeClickable(element),"");
                             find = true;
                             break;
                         }
                     }
-                    mutualSwipeGestureExtensions.swipe(!find, ScrollDirection.DOWN,"search: " + fileMatch);
+                    extensions.mutualSwipeGestureExtensions.swipe(!find, ScrollDirection.DOWN,"search: " + fileMatch);
                 }
             } else this.onFail(fileMatch);
         } catch (Exception ex) {
@@ -109,7 +105,7 @@ public class PushPullFilesExtensions extends MobileWebDriverManager {
         }
 
         if (!find) this.onFail(fileMatch);
-        infraStructuresExtensions.activateApp(this.setBaseApplication);
+        extensions.infraStructuresExtensions.activateApp(this.setBaseApplication);
     }
 
     public enum HighBarNavigation {

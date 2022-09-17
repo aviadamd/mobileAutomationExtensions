@@ -1,6 +1,6 @@
-package base.mobile;
+package base.mobile.findElements;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import base.mobile.enums.ScrollDirection;
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.AppiumDriver;
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Description;
 import java.time.Duration;
 
 @Slf4j
-public class MutualSwipeGestureExtensions extends MobileWebDriverManager {
+public class MutualSwipeGestureExtensions extends MobileManager {
 
     /** default screen - 10 from screen frame value **/
     private final int edgeBorder = 10;

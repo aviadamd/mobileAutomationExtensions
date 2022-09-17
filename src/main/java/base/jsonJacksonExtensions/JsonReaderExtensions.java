@@ -1,6 +1,6 @@
 package base.jsonJacksonExtensions;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class JsonReaderExtensions extends MobileWebDriverManager {
+public class JsonReaderExtensions extends MobileManager {
 
     private final File file;
     private final ObjectMapper objectMapper;

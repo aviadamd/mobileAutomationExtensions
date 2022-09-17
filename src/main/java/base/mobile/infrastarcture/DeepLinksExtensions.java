@@ -1,6 +1,6 @@
-package base.mobile;
+package base.mobile.infrastarcture;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.context.annotation.Description;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class DeepLinksExtensions extends MobileWebDriverManager {
+public class DeepLinksExtensions extends MobileManager {
 
     private String deepLinkUrl;
     private String clientPackage;

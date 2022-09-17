@@ -1,6 +1,6 @@
 package base.jsonJacksonExtensions;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import com.aventstack.extentreports.Status;
 import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
-public class JsonFileExtensions extends MobileWebDriverManager {
+public class JsonFileExtensions extends MobileManager {
 
     /**
      * verifyInitiation of the file path

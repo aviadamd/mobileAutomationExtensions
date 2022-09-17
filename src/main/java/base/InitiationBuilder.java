@@ -1,7 +1,7 @@
 package base;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 
-public class InitiationBuilder extends MobileWebDriverManager {
+public class InitiationBuilder extends MobileManager {
 
 }

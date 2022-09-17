@@ -1,6 +1,6 @@
 package base.jsonJacksonExtensions;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -11,8 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-public class JsonWriterExtensions extends MobileWebDriverManager {
-
+public class JsonWriterExtensions extends MobileManager {
     private final File file;
     private final ObjectMapper objectMapper;
 

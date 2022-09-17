@@ -1,6 +1,6 @@
-package base.mobile;
+package base.mobile.findElements;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.WebElement;
@@ -9,7 +9,7 @@ import static base.staticData.MobileStringsUtilities.formatStringToNumber;
 import static org.apache.commons.lang3.math.NumberUtils.toDouble;
 
 @Slf4j
-public class ElementGetTextsExtractionExtensions extends MobileWebDriverManager {
+public class ElementGetTextsExtractionExtensions extends MobileManager {
 
     private int elementTimeOut = 4;
     private Pair<String,String> elementsAttr = Pair.of("text", "label");
@@ -104,7 +104,7 @@ public class ElementGetTextsExtractionExtensions extends MobileWebDriverManager 
      */
     private String getValueFrom(WebElement element) {
         return new ElementGetTextsExtensions()
-                .setElementTo(this.elementTimeOut)
+                .setFluentWait(this.elementTimeOut, 500)
                 .getValue(element, this.elementsAttr)
                 .proceed();
     }

@@ -1,6 +1,6 @@
 package base.driversManager.appiumEntry;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import base.reports.testFilters.Reasons;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class AppiumServicesController extends MobileWebDriverManager {
+public class AppiumServicesController extends MobileManager {
 
     public static String aOkCallback = "aOkCallback";
     public static String okHttp = "OkHttp";

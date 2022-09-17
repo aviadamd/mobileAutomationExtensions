@@ -1,6 +1,6 @@
 package base.mobile.elementsData;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
@@ -13,7 +13,7 @@ import static java.util.Arrays.asList;
 public class ElementsConstants {
 
     private static boolean isAndroidClient() {
-        return MobileWebDriverManager
+        return MobileManager
                 .getProperty()
                 .getPlatformType()
                 .equals("ANDROID");

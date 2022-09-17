@@ -1,7 +1,7 @@
-package base.mobile;
+package base.mobile.findElements;
 
 import base.IntegrateReport;
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import base.dateUtils.DateFormatData;
 import base.mobile.elementsData.ElementsConstants;
 import base.mobile.enums.GetValuesBy;
@@ -14,35 +14,18 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import java.time.Duration;
 import static base.dateUtils.dateValidator.DateValidatorEx.isDateValid;
 import static base.staticData.MobileStringsUtilities.*;
 
 @Slf4j
-public class ElementGetTextsExtensions extends MobileWebDriverManager {
+public class ElementGetTextsExtensions extends MobileManager {
 
-    private String step = "";
-    private Status status = Status.WARNING;
     private int elementTo = 5;
+    private int pollingEvery = 500;
 
-    private AppiumFluentWaitExtensions appiumFluentWaitExtensions() {
-        return new AppiumFluentWaitExtensions()
-                .withGeneralPollingWaitStrategy(Duration.ofSeconds(this.elementTo))
-                .pollingEvery(Duration.ofMillis(500));
-    }
-
-    public ElementGetTextsExtensions setStatus(Status status) {
-        this.status = status;
-        return this;
-    }
-
-    public ElementGetTextsExtensions setStep(String step) {
-        this.step = step;
-        return this;
-    }
-
-    public ElementGetTextsExtensions setElementTo(int elementTo) {
+    public ElementGetTextsExtensions setFluentWait(int elementTo, int pollingEvery) {
         this.elementTo = elementTo;
+        this.pollingEvery = pollingEvery;
         return this;
     }
 
@@ -55,7 +38,7 @@ public class ElementGetTextsExtensions extends MobileWebDriverManager {
         ReasonsStep step = new ReasonsStep(Status.INFO, "", this.step, TestCategory.NONE, TestSeverity.NONE, "desc");
         String strTextElement = "";
         try {
-            strTextElement = this.appiumFluentWaitExtensions()
+            strTextElement = this.appiumFluentWaitExtensions(this.elementTo, this.pollingEvery)
                     .appiumFluentWait()
                     .until(ExpectedConditions.elementToBeClickable(element))
                     .getText();
@@ -76,7 +59,7 @@ public class ElementGetTextsExtensions extends MobileWebDriverManager {
         ReasonsStep step = new ReasonsStep(Status.PASS, "", this.step, TestCategory.NONE, TestSeverity.NONE, "desc");
         String strTextElement = "";
         try {
-            strTextElement = this.appiumFluentWaitExtensions()
+            strTextElement = this.appiumFluentWaitExtensions(this.elementTo, this.pollingEvery)
                     .appiumFluentWait()
                     .until(ExpectedConditions.elementToBeClickable(element))
                     .getAttribute(isAndroidClient() ? clientAttribute.getLeft() : clientAttribute.getRight());
@@ -96,7 +79,7 @@ public class ElementGetTextsExtensions extends MobileWebDriverManager {
         ReasonsStep step = new ReasonsStep(Status.PASS, "", this.step, TestCategory.NONE, TestSeverity.NONE, "desc");
         String strTextElement = "";
         try {
-            strTextElement = this.appiumFluentWaitExtensions()
+            strTextElement = this.appiumFluentWaitExtensions(this.elementTo, this.pollingEvery)
                     .appiumFluentWait()
                     .until(ExpectedConditions.elementToBeClickable(by))
                     .getText();
@@ -117,7 +100,7 @@ public class ElementGetTextsExtensions extends MobileWebDriverManager {
         ReasonsStep step = new ReasonsStep(Status.PASS, "", this.step, TestCategory.NONE, TestSeverity.NONE, "desc");
         String strTextElement = "";
         try {
-            strTextElement =  this.appiumFluentWaitExtensions()
+            strTextElement =  this.appiumFluentWaitExtensions(this.elementTo, this.pollingEvery)
                     .appiumFluentWait()
                     .until(ExpectedConditions.elementToBeClickable(by))
                     .getAttribute(isAndroidClient() ? clientAttribute.getLeft() : clientAttribute.getRight());
@@ -139,7 +122,7 @@ public class ElementGetTextsExtensions extends MobileWebDriverManager {
 
         ReasonsStep step = new ReasonsStep(Status.FAIL, "", this.step, TestCategory.NONE, TestSeverity.NONE, "");
         try {
-            if (this.appiumFluentWaitExtensions().isGetElement(element, by.getDesc())) {
+            if (this.appiumFluentWaitExtensions(this.elementTo, this.pollingEvery).isGetElement(element, by.getDesc())) {
                 for (String getTextAttr : ElementsConstants.clientAttr()) {
                     strTextElement = element.getAttribute(getTextAttr);
                     if (this.isFindTextBy(strTextElement, by)) {
@@ -168,9 +151,9 @@ public class ElementGetTextsExtensions extends MobileWebDriverManager {
 
         ReasonsStep step = new ReasonsStep(this.status, "", this.step, TestCategory.NONE, TestSeverity.NONE, "");
         try {
-            if (this.appiumFluentWaitExtensions().isGetElement(by, byVal.getDesc())) {
+            if (this.appiumFluentWaitExtensions(this.elementTo, this.pollingEvery).isGetElement(by, byVal.getDesc())) {
                 for (String getTextAttr : ElementsConstants.clientAttr()) {
-                    strTextElement = this.appiumFluentWaitExtensions()
+                    strTextElement = this.appiumFluentWaitExtensions(this.elementTo, this.pollingEvery)
                             .appiumFluentWait()
                             .until(ExpectedConditions.elementToBeClickable(by))
                             .getAttribute(getTextAttr);

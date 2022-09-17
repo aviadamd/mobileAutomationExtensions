@@ -1,13 +1,14 @@
-package base.mobile;
+package base.mobile.infrastarcture;
 
 import base.IntegrateReport;
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
+import base.mobile.findElements.VerificationsTextsExtensions;
 import base.reports.testFilters.ReasonsStep;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
 import com.aventstack.extentreports.Status;
 
-public class ApplicationLauncherExtensions extends MobileWebDriverManager {
+public class ApplicationLauncherExtensions extends MobileManager {
 
     private String setAppActivity = "";
     public boolean isReportFromClass = true;
@@ -49,7 +50,7 @@ public class ApplicationLauncherExtensions extends MobileWebDriverManager {
             step = new ReasonsStep(Status.PASS,"","", TestCategory.NONE, TestSeverity.NONE, "pass launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
         } else {
             step = new ReasonsStep(Status.FAIL,"","", TestCategory.NONE, TestSeverity.NONE, "pass launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
-            if (this.isReportFromClass) this.reportStepTest(step);
+            if (this.isReportFromClass) reportStepTest(step);
         }
         return new IntegrateReport<>(step, this);
     }

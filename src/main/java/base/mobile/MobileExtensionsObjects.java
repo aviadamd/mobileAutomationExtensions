@@ -1,20 +1,43 @@
 package base.mobile;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
+import base.mobile.findElements.*;
+import base.mobile.infrastarcture.DeepLinksExtensions;
+import base.mobile.infrastarcture.InfraStructuresExtensions;
+import com.aventstack.extentreports.Status;
 
-public class MobileExtensionsObjects extends MobileWebDriverManager {
+public class MobileExtensionsObjects extends MobileManager {
 
     public final ElementGetTextsExtensions elementGetTextsExtensions;
     public final ElementsSearchExtensions elementsSearchExtensions;
     public final DeepLinksExtensions deepLinksExtensions;
     public final ClickElementExtensions clickElementExtensions;
     public final AppiumFluentWaitExtensions appiumFluentWaitExtensions;
+    public final InfraStructuresExtensions infraStructuresExtensions;
+    public final VerificationsTextsExtensions verificationsTextsExtensions;
+    public final MutualSwipeGestureExtensions mutualSwipeGestureExtensions;
 
+
+    public MobileExtensionsObjects setStep(String step) {
+        this.step = step;
+        return this;
+    }
+    public MobileExtensionsObjects setStatus(Status status) {
+        this.status = status;
+        return this;
+    }
+    public MobileExtensionsObjects setElementTimeOut(int timeOut) {
+        this.timeOut = timeOut;
+        return this;
+    }
     public MobileExtensionsObjects() {
         this.elementGetTextsExtensions = new ElementGetTextsExtensions();
         this.elementsSearchExtensions = new ElementsSearchExtensions();
         this.deepLinksExtensions = new DeepLinksExtensions();
         this.appiumFluentWaitExtensions = new AppiumFluentWaitExtensions();
         this.clickElementExtensions = new ClickElementExtensions();
+        this.infraStructuresExtensions = new InfraStructuresExtensions();
+        this.verificationsTextsExtensions = new VerificationsTextsExtensions();
+        this.mutualSwipeGestureExtensions = new MutualSwipeGestureExtensions();
     }
 }

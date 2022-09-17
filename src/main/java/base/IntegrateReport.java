@@ -2,8 +2,11 @@ package base;
 
 import base.reports.testFilters.ReasonsStep;
 
-public class IntegrateReport<T> {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
+public class IntegrateReport<T> {
     private final T action;
     private final ReasonsStep reasonsStep;
 
@@ -11,7 +14,6 @@ public class IntegrateReport<T> {
         this.reasonsStep = reasonsStep;
         this.action = action;
     }
-
-    public T proceed() { return action; }
-    public ReasonsStep getReasonsStep() { return reasonsStep; }
+    public T proceed() { return this.action; }
+    public Optional<ReasonsStep> getReasonsStep() { return Optional.ofNullable(this.reasonsStep); }
 }

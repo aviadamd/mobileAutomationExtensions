@@ -1,74 +1,83 @@
 package base.driversManager;
 
+import base.mobile.AppiumFluentWaitExtensions;
 import base.propertyConfig.PropertyConfig;
 import base.reports.extentManager.ExtentLogger;
 import base.repository.ReportStepRepository;
 import base.repository.ReportTestRepository;
 import base.reports.testFilters.*;
-import base.repository.mongo.notReactive.MongoCollectionRepoImpl;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.CodeLanguage;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
-import io.appium.java_client.service.local.AppiumDriverLocalService;
-import io.appium.java_client.service.local.AppiumServiceBuilder;
-import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.Assert;
-import java.io.File;
-import java.util.HashMap;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class MobileWebDriverManager {
-    public static MongoCollectionRepoImpl mongoInstance;
-    public static PropertyConfig getProperty() { return new PropertyConfig(); }
-    private static AppiumDriverLocalService server;
-    private DesiredCapabilities capabilities = new DesiredCapabilities();
-
-    public MobileWebDriverManager addCapabilitiesExtra(DesiredCapabilities capabilities) {
-        this.capabilities = capabilities;
-        return this;
-    }
+public class MobileManager {
+    public String step = "";
+    public int timeOut = 15;
+    public Status status = Status.FAIL;
+    private static DesiredCapabilities capabilities = new DesiredCapabilities();
 
     public boolean isAndroidClient() {
         return getProperty().getPlatformType().equals("ANDROID");
+    }
+
+    public static PropertyConfig getProperty() {
+        return new PropertyConfig();
+    }
+
+    public AppiumFluentWaitExtensions appiumFluentWaitExtensions(int elementTo, int pollingEvery) {
+        return new AppiumFluentWaitExtensions()
+                .withGeneralPollingWaitStrategy(Duration.ofSeconds(elementTo))
+                .pollingEvery(Duration.ofMillis(pollingEvery));
+    }
+
+    public MobileManager addCapabilitiesExtra(DesiredCapabilities capabilities) {
+        MobileManager.capabilities = capabilities;
+        return this;
     }
 
     /**
      * first android/ios driver init
      * @return appium driver
      */
-    public WebDriver getDriver() {
-        if (server == null) {
-            server = initServer();
-            server.start();
+    public static WebDriver getDriver() {
+        if (AppiumServerManager.getServer() == null) {
+            AppiumServerManager.setServer(AppiumServerManager.initServer(getProperty().getNodeJs(), getProperty().getAppiumMainJsPath()));
+            AppiumServerManager.getServer().start();
         }
 
         if (DriverManager.getLocalDriver() == null) {
             switch (getProperty().getPlatformType()) {
                 case MobilePlatformType.ANDROID:
                     DriverManager.setLocalDriver(new AndroidWebDriverManager()
-                            .addCapabilitiesExtra(this.capabilities)
-                            .initAndroidDriver(server.getUrl()));
+                            .addCapabilitiesExtra(capabilities)
+                            .initAndroidDriver(AppiumServerManager.getServer().getUrl()));
                     break;
                 case MobilePlatformType.IOS:
                     DriverManager.setLocalDriver(new IosWebDriverManager()
-                            .addCapabilitiesExtra(this.capabilities)
-                            .initIosDriver(server.getUrl()));
+                            .addCapabilitiesExtra(capabilities)
+                            .initIosDriver(AppiumServerManager.getServer().getUrl()));
                     break;
             }
+        }
+        if (DriverManager.getLocalDriver() == null) {
+            Assert.fail("DriverManager.getLocalDriver() = null");
         }
         return DriverManager.getLocalDriver();
     }
 
     /*** on after all or after each */
     public void tearDown() {
-        if (this.getDriver() != null) this.getDriver().quit();
-        if (server != null) server.stop();
+        if (DriverManager.getLocalDriver() != null) DriverManager.getLocalDriver().quit();
+        if (AppiumServerManager.getServer() != null) AppiumServerManager.getServer().stop();
     }
 
     public static void reportTest(Reasons reportTestDto) {
@@ -89,7 +98,11 @@ public class MobileWebDriverManager {
 
     public static void reportStepTest(ReasonsStep reportStepDto) {
         ReportStepRepository.getInstance().save(reportStepDto);
-        ExtentLogger.loggerPrint(reportStepDto.getStatus(), "description: " + reportStepDto.getDescription());
+
+        String step = reportStepDto.getStepId();
+        String desc = reportStepDto.getDescription();
+
+        ExtentLogger.loggerPrint(reportStepDto.getStatus(), step + "" + desc);
         if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
             Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
         }
@@ -100,28 +113,6 @@ public class MobileWebDriverManager {
         if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
             Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
         }
-    }
-
-    public HashMap<String,String> environment() {
-        HashMap<String, String> environment = new HashMap<>();
-        environment.put("PATH", getProperty().getLocalBin() + System.getenv("PATH"));
-        environment.put("ANDROID_HOME", getProperty().getAndroidSdk());
-        environment.put("JAVA_HOME", getProperty().getJavaHome());
-        return environment;
-    }
-
-    private static AppiumDriverLocalService initServer() {
-        AppiumServiceBuilder builder = new AppiumServiceBuilder();
-        try {
-            builder.usingDriverExecutable(new File(getProperty().getNodeJs()))
-                    .withAppiumJS(new File(getProperty().getAppiumMainJsPath()))
-                    .usingAnyFreePort()
-                    .withArgument(GeneralServerFlag.RELAXED_SECURITY)
-                    .withStartUpTimeOut(15, TimeUnit.SECONDS);
-        } catch (Exception appiumEx) {
-            reportTest(new Reasons(Status.FAIL,"init","init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail launch appium server"));
-        }
-        return AppiumDriverLocalService.buildService(builder);
     }
 
     public void sleepSeconds(int timeOut) {
@@ -144,12 +135,10 @@ public class MobileWebDriverManager {
         }
     }
 
-    public String screenshot() {
+    public static String screenshot() {
         try {
-            if (this.getDriver() != null) {
-                TakesScreenshot ts = (TakesScreenshot) this.getDriver();
-                String source = ts.getScreenshotAs(OutputType.BASE64);
-                return "data:image/jpg;base64, " + source;
+            if (DriverManager.getLocalDriver() != null) {
+                return ((TakesScreenshot) DriverManager.getLocalDriver()).getScreenshotAs(OutputType.BASE64);
             }
         } catch (Exception exception) {
             log.error("screen shot error " + exception.getMessage());

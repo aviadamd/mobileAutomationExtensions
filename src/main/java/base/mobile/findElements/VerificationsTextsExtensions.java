@@ -1,6 +1,6 @@
-package base.mobile;
+package base.mobile.findElements;
 
-import base.driversManager.MobileWebDriverManager;
+import base.driversManager.MobileManager;
 import base.staticData.MobileStringsUtilities;
 import com.aventstack.extentreports.Status;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class VerificationsTextsExtensions extends MobileWebDriverManager {
+public class VerificationsTextsExtensions extends MobileManager {
 
     public boolean compareText(boolean equals, String actual, String expected, Status logStatus) {
         boolean status;
