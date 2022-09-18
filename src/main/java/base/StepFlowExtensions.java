@@ -4,7 +4,6 @@ import base.mobile.*;
 import base.reports.extentManager.ExtentLogger;
 import com.aventstack.extentreports.Status;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Description;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -22,7 +21,6 @@ public class StepFlowExtensions extends MobileExtensionsObjects {
      * @param consumer your function to be
      * @return Consumer this
      */
-    @Description("step ")
     public StepFlowExtensions steps(String stepId, String stepDescription, Consumer<MobileExtensionsObjects> consumer) {
         try {
             ExtentLogger.loggerPrint(Status.INFO, "execute steps id: " + stepId + ", description: " + stepDescription);

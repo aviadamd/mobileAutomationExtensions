@@ -1,6 +1,6 @@
 package base.mobile.findElements;
 
-import base.CollectionExtensions;
+import base.staticData.CollectionExtensions;
 import base.driversManager.MobileManager;
 import base.mobile.enums.DividedList;
 import io.appium.java_client.AppiumFluentWait;

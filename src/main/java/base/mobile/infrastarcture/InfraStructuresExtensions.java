@@ -1,6 +1,7 @@
 package base.mobile.infrastarcture;
 
 import base.driversManager.MobileManager;
+import base.mobile.MobileExtensionsObjects;
 import base.mobile.enums.AppState;
 import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.android.Activity;

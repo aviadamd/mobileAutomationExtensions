@@ -47,9 +47,9 @@ public class ApplicationLauncherExtensions extends MobileManager {
 
         String getCurrent = new InfraStructuresExtensions().getCurrentAppPackage();
         if (new VerificationsTextsExtensions().isTextEquals(getCurrent, packageNameValidation, Status.INFO)) {
-            step = new ReasonsStep(Status.PASS,"","", TestCategory.NONE, TestSeverity.NONE, "pass launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
+            step = new ReasonsStep(Status.PASS,"", TestCategory.NONE, TestSeverity.NONE, "pass launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
         } else {
-            step = new ReasonsStep(Status.FAIL,"","", TestCategory.NONE, TestSeverity.NONE, "pass launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
+            step = new ReasonsStep(Status.FAIL,"", TestCategory.NONE, TestSeverity.NONE, "pass launch app "+packageNameValidation+ " with "+appOptions.getDescription()+"");
             if (this.isReportFromClass) reportStepTest(step);
         }
         return new IntegrateReport<>(step, this);

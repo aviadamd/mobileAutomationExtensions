@@ -20,9 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class MobileManager {
-    public String step = "";
-    public int timeOut = 15;
-    public Status status = Status.FAIL;
+
     private static DesiredCapabilities capabilities = new DesiredCapabilities();
 
     public boolean isAndroidClient() {
@@ -75,7 +73,7 @@ public class MobileManager {
     }
 
     /*** on after all or after each */
-    public void tearDown() {
+    public static void tearDown() {
         if (DriverManager.getLocalDriver() != null) DriverManager.getLocalDriver().quit();
         if (AppiumServerManager.getServer() != null) AppiumServerManager.getServer().stop();
     }
@@ -101,8 +99,8 @@ public class MobileManager {
 
         String step = reportStepDto.getStepId();
         String desc = reportStepDto.getDescription();
-
-        ExtentLogger.loggerPrint(reportStepDto.getStatus(), step + "" + desc);
+        log.info(step + " " + desc);
+        ExtentLogger.loggerPrint(reportStepDto.getStatus(), step + " " + desc);
         if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
             Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
         }

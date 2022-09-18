@@ -12,7 +12,6 @@ public class ReasonsStepDtoAdapter {
     public static Document toDocument(final ReasonsStep reasons) {
         return DocumentAdapter.toDocument(reasons
                 .append("status", reasons.getStatus().getName())
-                .append("_id", reasons.getTestId())
                 .append("stepId", reasons.getStepId())
                 .append("testName", reasons.getCategory().getText())
                 .append("category", reasons.getSeverity().getText())
@@ -24,7 +23,6 @@ public class ReasonsStepDtoAdapter {
                 .stream()
                 .map(reasons -> DocumentAdapter.toDocument(reasons
                         .append("status", reasons.getStatus().getName())
-                        .append("_id", reasons.getTestId())
                         .append("stepId", reasons.getStepId())
                         .append("testName", reasons.getCategory().getText())
                         .append("category", reasons.getSeverity().getText())

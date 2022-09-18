@@ -5,10 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TestTarget {
-    String testId() default "";
-    String[] author() default "unknownAuthor";
-    CategoryType[] category() default CategoryType.SANITY;
+public @interface MongoIntegration {
+    boolean integrateMongo() default false;
 }

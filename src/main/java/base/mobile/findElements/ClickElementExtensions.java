@@ -29,7 +29,17 @@ import static io.appium.java_client.touch.LongPressOptions.longPressOptions;
 public class ClickElementExtensions extends MobileManager {
     private int elementTo = 15;
     private int pollingEvery = 500;
+    private String stepNumber = "";
 
+    private Status status = Status.FAIL;
+    public ClickElementExtensions setStepNumber(String stepNumber) {
+        this.stepNumber = stepNumber;
+        return this;
+    }
+    public ClickElementExtensions setStatus(Status status) {
+        this.status = status;
+        return this;
+    }
     public ClickElementExtensions setFluentWait(int elementTo, int pollingEvery) {
         this.elementTo = elementTo;
         this.pollingEvery = pollingEvery;
@@ -50,9 +60,9 @@ public class ClickElementExtensions extends MobileManager {
                     .appiumFluentWait()
                     .until(conditions)
                     .click();
-           reportStep = this.reasonsStep(Status.PASS, this.step, TestCategory.DRIVER, TestSeverity.NONE, this.step + " pass click on " + desc);
+           reportStep = new ReasonsStep(Status.PASS, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, this.stepNumber + "step pass click on " + desc);
         } catch (Exception exception) {
-            reportStep = this.reasonsStep(this.status, this.step, TestCategory.DRIVER, TestSeverity.NONE, desc + " fail to click on element " + exception.getMessage());
+            reportStep = new ReasonsStep(this.status, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, desc + " fail to click on element " + exception.getMessage());
         }
         reportStepTest(reportStep);
         return new IntegrateReport<>(reportStep, new MobileExtensionsObjects());
@@ -64,10 +74,10 @@ public class ClickElementExtensions extends MobileManager {
             this.appiumFluentWaitExtensions(this.elementTo, this.pollingEvery)
                     .appiumFluentWait()
                     .until(ExpectedConditions.elementToBeClickable(element));
-            Point point = this.getElementCords(element);
+             Point point = this.getElementCords(element);
             reportStep = this.tapAtPoint(point);
         } catch (Exception e) {
-            reportStep = this.reasonsStep(this.status, this.step, TestCategory.DRIVER, TestSeverity.NONE, this.step + " tap element fail");
+            reportStep = new ReasonsStep(this.status, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, this.stepNumber + " tap element fail");
         }
         reportStepTest(reportStep);
         return new IntegrateReport<>(reportStep, new MobileExtensionsObjects());
@@ -85,9 +95,9 @@ public class ClickElementExtensions extends MobileManager {
             if (isAndroidClient()) {
                 new InfraStructuresExtensions().androidDriver().perform(ImmutableList.of(tap));
             } else new InfraStructuresExtensions().iosDriver().perform(ImmutableList.of(tap));
-            reasonsStep = this.reasonsStep(this.status, this.step, TestCategory.DRIVER, TestSeverity.HIGH, "pass tap at point");
+            reasonsStep = new ReasonsStep(this.status, this.stepNumber, TestCategory.DRIVER, TestSeverity.HIGH, "pass tap at point");
         } catch (Exception e) {
-            reasonsStep = this.reasonsStep(this.status, this.step, TestCategory.DRIVER, TestSeverity.HIGH, e.getMessage());
+            reasonsStep = new ReasonsStep(this.status, this.stepNumber, TestCategory.DRIVER, TestSeverity.HIGH, e.getMessage());
         }
         return reasonsStep;
     }
@@ -147,9 +157,9 @@ public class ClickElementExtensions extends MobileManager {
                             .withDuration(Duration.ofMillis(millis)))
                     .release()
                     .perform();
-            step = this.reasonsStep(Status.PASS, this.step, TestCategory.DRIVER, TestSeverity.NONE, "pass tap");
+            step = new ReasonsStep(Status.PASS, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, "pass tap");
         } catch (Exception var4) {
-            step = this.reasonsStep(this.status, this.step, TestCategory.DRIVER, TestSeverity.NONE, "fail tap");
+            step = new ReasonsStep(this.status, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, "fail tap");
         }
         return new IntegrateReport<>(step, this);
     }
@@ -162,22 +172,10 @@ public class ClickElementExtensions extends MobileManager {
                     .overRideWebDriverWait(Duration.ofSeconds(timeOut), Duration.ofMillis(500))
                     .findElementBy(By.xpath(generateXpath));
             this.clickElement(ExpectedConditions.elementToBeClickable(element), name);
-            step = this.reasonsStep(Status.PASS, this.step, TestCategory.DRIVER, TestSeverity.NONE, "pass click");
+            step = new ReasonsStep(Status.PASS, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, "pass click");
         } catch (Exception exception) {
-            step = this.reasonsStep(Status.FAIL, this.step, TestCategory.DRIVER, TestSeverity.NONE, "fail click");
+            step = new ReasonsStep(Status.FAIL, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, "fail click");
         }
-
         return new IntegrateReport<>(step, this);
-    }
-
-    private ReasonsStep reasonsStep(Status status, String step, TestCategory category, TestSeverity severity, String description) {
-        return new ReasonsStep(
-                status,
-                "",
-                step,
-                category,
-                severity,
-                description
-        );
     }
 }

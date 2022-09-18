@@ -1,6 +1,7 @@
 package base.mobile.findElements;
 
 import base.driversManager.MobileManager;
+import base.mobile.MobileExtensionsObjects;
 import base.mobile.enums.ScrollDirection;
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.AppiumDriver;

@@ -5,14 +5,10 @@ import base.anontations.CategoryType;
 import base.anontations.TestTarget;
 import base.driversManager.MobileManager;
 import base.listeners.MobileListener;
-import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.*;
-
-@Slf4j
-@Listeners(MobileListener.class)
+@Listeners(value = MobileListener.class)
 public class PocTest extends StepFlowExtensions {
 
     private StepFlowExtensions stepFlow;
@@ -27,27 +23,53 @@ public class PocTest extends StepFlowExtensions {
         this.stepFlow = new StepFlowExtensions();
     }
 
-    @AfterTest
+    @AfterClass
     public void tearDownTests() {
-        this.tearDown();
+        MobileManager.tearDown();
     }
 
     @Test(priority = 1, description = "123456 first test poc")
-    @TestTarget(author = {"aviad"}, category = { CategoryType.SANITY, CategoryType.REGRESSION})
+    @TestTarget(testId = "123456", author = {"aviad"}, category = { CategoryType.SANITY, CategoryType.REGRESSION})
     public void firstTestPoc() {
         this.stepFlow.steps("1-2", "click on user name edit text", action -> {
-                    action.setStep("1")
-                            .clickElementExtensions.clickElement(ExpectedConditions.elementToBeClickable(By.id(loginEle)), "login user name")
+                    action.clickElementExtensions
+                            .setStepNumber("1")
+                            .clickElement(By.id(loginEle), "login user name")
                             .proceed()
-                            .setStep("2")
-                            .clickElementExtensions.clickElement(ExpectedConditions.elementToBeClickable(By.id(loginEle)), "login user name");
+                            .clickElementExtensions
+                            .setStepNumber("2")
+                            .clickElement(By.id(loginEle), "login user name");
                 })
                 .steps("3-4", "click on user name edit text", action -> {
-                    action.setStep("3")
-                            .clickElementExtensions.clickElement(ExpectedConditions.elementToBeClickable(By.id(loginEle)), "login user name")
+                    action.clickElementExtensions
+                            .setStepNumber("3")
+                            .clickElement(By.id(loginEle), "login user name")
                             .proceed()
-                            .setStep("4")
-                            .clickElementExtensions.clickElement(ExpectedConditions.elementToBeClickable(By.id(loginEle)), "login user name");
+                            .clickElementExtensions
+                            .setStepNumber("4")
+                            .clickElement(By.id(loginEle), "login user name");
+                });
+    }
+    @Test(priority = 2, description = "123457 first test poc")
+    @TestTarget(testId = "123457", author = {"aviad"}, category = { CategoryType.SANITY, CategoryType.REGRESSION})
+    public void secondTestPoc() {
+        this.stepFlow.steps("1-2", "click on user name edit text", action -> {
+                    action.clickElementExtensions
+                            .setStepNumber("1")
+                            .clickElement(By.id(loginEle), "login user name")
+                            .proceed()
+                            .clickElementExtensions
+                            .setStepNumber("2")
+                            .clickElement(By.id(loginEle), "login user name");
+                })
+                .steps("3-4", "click on user name edit text", action -> {
+                    action.clickElementExtensions
+                            .setStepNumber("3")
+                            .clickElement(By.id(loginEle), "login user name")
+                            .proceed()
+                            .clickElementExtensions
+                            .setStepNumber("4")
+                            .clickElement(By.id(loginEle), "login user name");
                 });
     }
 }

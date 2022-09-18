@@ -1,8 +1,10 @@
 package base.driversManager;
 
 import base.reports.testFilters.Reasons;
+import base.reports.testFilters.ReasonsStep;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
+import base.repository.ReportStepRepository;
 import base.repository.ReportTestRepository;
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.android.AndroidDriver;
@@ -27,9 +29,9 @@ public class AndroidWebDriverManager extends MobileManager {
         AndroidDriver<WebElement> androidDriver = null;
         try {
             androidDriver = new AndroidDriver<>(url, this.initCapabilities());
-            ReportTestRepository.getInstance().save(new Reasons(Status.PASS,"init","init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver"));
+            ReportStepRepository.getInstance().save(new ReasonsStep(Status.PASS,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"pass init android driver"));
         } catch (Exception appiumEx) {
-            ReportTestRepository.getInstance().save(new Reasons(Status.FAIL,"init","init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver"));
+            ReportStepRepository.getInstance().save(new ReasonsStep(Status.FAIL,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver"));
         }
         return androidDriver;
     }
@@ -43,6 +45,7 @@ public class AndroidWebDriverManager extends MobileManager {
         capabilities.setCapability("appium:platformVersion", getProperty().getDeviceVersion());
         capabilities.setCapability("avd", getProperty().getDeviceName());
         capabilities.setCapability("udid", getProperty().getDeviceName());
+        capabilities.setCapability("newCommandTimeout", 15000);
         capabilities.setCapability("appium:autoGrantPermissions", true);
         capabilities.setCapability("appium:noReset", true);
         if (this.capabilities != null) {

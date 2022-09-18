@@ -33,7 +33,7 @@ public class ReportStepRepository {
 
     public void delete(String id) {
         for (ReasonsStep reportStepDto: reportTestRepositoryList) {
-            if (this.findObjectBy(e -> e.getTestId().equals(id)).isPresent()) {
+            if (this.findObjectBy(e -> e.getStepId().equals(id)).isPresent()) {
                 reportTestRepositoryList.remove(reportStepDto);
                 break;
             }
@@ -42,7 +42,7 @@ public class ReportStepRepository {
 
     public void updateTestStatus(String id, Status testStatus) {
         for (ReasonsStep reportDto: reportTestRepositoryList) {
-            if (this.findObjectBy(e -> e.getTestId().equals(id)).isPresent()) {
+            if (this.findObjectBy(e -> e.getStepId().equals(id)).isPresent()) {
                 reportDto.setStatus(testStatus);
                 reportTestRepositoryList.add(reportDto);
                 break;
@@ -59,7 +59,7 @@ public class ReportStepRepository {
     public Optional<ReasonsStep> findObjectById(String id) {
         for (ReasonsStep reasonsStep : Optional.of(reportTestRepositoryList
                 .stream()
-                .filter(reportStepDto -> reportStepDto.getTestId().equals(id))
+                .filter(reportStepDto -> reportStepDto.getStepId().equals(id))
                 .collect(Collectors.toList()))
                 .get()) {
             return Optional.of(reasonsStep);

@@ -7,7 +7,6 @@ import base.mobile.infrastarcture.InfraStructuresExtensions;
 import com.aventstack.extentreports.Status;
 
 public class MobileExtensionsObjects extends MobileManager {
-
     public final ElementGetTextsExtensions elementGetTextsExtensions;
     public final ElementsSearchExtensions elementsSearchExtensions;
     public final DeepLinksExtensions deepLinksExtensions;
@@ -17,19 +16,6 @@ public class MobileExtensionsObjects extends MobileManager {
     public final VerificationsTextsExtensions verificationsTextsExtensions;
     public final MutualSwipeGestureExtensions mutualSwipeGestureExtensions;
 
-
-    public MobileExtensionsObjects setStep(String step) {
-        this.step = step;
-        return this;
-    }
-    public MobileExtensionsObjects setStatus(Status status) {
-        this.status = status;
-        return this;
-    }
-    public MobileExtensionsObjects setElementTimeOut(int timeOut) {
-        this.timeOut = timeOut;
-        return this;
-    }
     public MobileExtensionsObjects() {
         this.elementGetTextsExtensions = new ElementGetTextsExtensions();
         this.elementsSearchExtensions = new ElementsSearchExtensions();

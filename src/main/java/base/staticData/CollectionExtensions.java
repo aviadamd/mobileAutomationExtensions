@@ -1,4 +1,4 @@
-package base;
+package base.staticData;
 
 import base.mobile.enums.DividedList;
 import lombok.extern.slf4j.Slf4j;

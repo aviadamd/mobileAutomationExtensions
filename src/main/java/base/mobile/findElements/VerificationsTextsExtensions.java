@@ -1,6 +1,7 @@
 package base.mobile.findElements;
 
 import base.driversManager.MobileManager;
+import base.mobile.MobileExtensionsObjects;
 import base.staticData.MobileStringsUtilities;
 import com.aventstack.extentreports.Status;
 import lombok.extern.slf4j.Slf4j;
