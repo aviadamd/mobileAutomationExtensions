@@ -2,7 +2,6 @@ package base.repository.mongo.notReactive;
 
 import base.repository.MongoBase;
 import base.repository.MongoConnection;
-import base.repository.ReportTestRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import lombok.extern.slf4j.Slf4j;

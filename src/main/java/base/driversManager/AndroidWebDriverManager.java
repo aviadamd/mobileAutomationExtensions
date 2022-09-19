@@ -1,11 +1,10 @@
 package base.driversManager;
 
-import base.reports.testFilters.Reasons;
 import base.reports.testFilters.ReasonsStep;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
-import base.repository.ReportStepRepository;
-import base.repository.ReportTestRepository;
+import base.reports.ReportStepRepository;
+import base.staticData.MobileStringsUtilities;
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.android.AndroidDriver;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +44,7 @@ public class AndroidWebDriverManager extends MobileManager {
         capabilities.setCapability("appium:platformVersion", getProperty().getDeviceVersion());
         capabilities.setCapability("avd", getProperty().getDeviceName());
         capabilities.setCapability("udid", getProperty().getDeviceName());
-        capabilities.setCapability("newCommandTimeout", 15000);
+        capabilities.setCapability("newCommandTimeout", MobileStringsUtilities.toInt("15000", 15000));
         capabilities.setCapability("appium:autoGrantPermissions", true);
         capabilities.setCapability("appium:noReset", true);
         if (this.capabilities != null) {

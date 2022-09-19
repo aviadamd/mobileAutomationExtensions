@@ -1,4 +1,4 @@
-package base.repository;
+package base.reports;
 
 import base.reports.testFilters.Reasons;
 import com.aventstack.extentreports.Status;
@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class ReportTestRepository {
-
     private static ReportTestRepository mInstance = null;
     public static ReportTestRepository getInstance() {
         if (mInstance == null) {

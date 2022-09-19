@@ -8,8 +8,8 @@ import base.reports.testFilters.ReasonsStep;
 import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
 import base.repository.MongoExtensionsManager;
-import base.repository.ReportStepRepository;
-import base.repository.ReportTestRepository;
+import base.reports.ReportStepRepository;
+import base.reports.ReportTestRepository;
 import base.repository.mongo.adapters.ReasonsDtoAdapter;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
@@ -56,10 +56,7 @@ public class MobileListenerManger extends MobileManager {
             List<ReasonsStep> reasonsStepList = ReportStepRepository.getInstance().getAllObjects();
             if (!reasonsStepList.isEmpty()) {
                 ReasonsStep last = ReportStepRepository.getInstance().getLastObject();
-                document = ReasonsDtoAdapter.toDocumentWithSteps(
-                        new Reasons(status, testId, methodTestName, last.getCategory(), last.getSeverity(),
-                        methodTestName + " is " + status.getName(), reasonsStepList)
-                );
+                document = ReasonsDtoAdapter.toDocumentWithSteps(new Reasons(status, testId, methodTestName, last.getCategory(), last.getSeverity(), methodTestName + " is " + status.getName(), reasonsStepList));
             }
         }
 
@@ -67,5 +64,16 @@ public class MobileListenerManger extends MobileManager {
         ExtentLogger.loggerPrint(status, ExtentLogger.createExpend("Test Json Info", document.toJson(), ExtentColor.BLUE));
         MongoExtensionsManager.getMongoInstance().deleteElement(Filters.eq("_id", testId));
         MongoExtensionsManager.getMongoInstance().insertElement(document);
+    }
+
+    static Optional<ITestResult> getTestResult(ITestResult iTestResult) {
+        return Optional.ofNullable(iTestResult);
+    }
+    static Optional<OnFailRetry> getOnFailAnnotation(ITestResult iTestResult) {
+        return Optional.ofNullable(iTestResult
+                .getMethod()
+                .getConstructorOrMethod()
+                .getMethod()
+                .getAnnotation(OnFailRetry.class));
     }
 }

@@ -1,4 +1,4 @@
-package base.repository;
+package base.reports;
 
 import base.reports.testFilters.Reasons;
 import base.reports.testFilters.ReasonsStep;
@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class ReportStepRepository {
-
     private static ReportStepRepository mInstance = null;
     public static ReportStepRepository getInstance() {
         if (mInstance == null) {
