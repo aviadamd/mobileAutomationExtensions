@@ -23,6 +23,8 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.time.Duration;
+
+import static base.reports.extentManager.ExtentLogger.reportStepTest;
 import static io.appium.java_client.touch.LongPressOptions.longPressOptions;
 
 @Slf4j
@@ -60,7 +62,7 @@ public class ClickElementExtensions extends MobileManager {
                     .appiumFluentWait()
                     .until(conditions)
                     .click();
-           reportStep = new ReasonsStep(Status.PASS, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, this.stepNumber + "step pass click on " + desc);
+           reportStep = new ReasonsStep(Status.PASS, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, this.stepNumber + " step pass click on " + desc);
         } catch (Exception exception) {
             reportStep = new ReasonsStep(this.status, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, desc + " fail to click on element " + exception.getMessage());
         }

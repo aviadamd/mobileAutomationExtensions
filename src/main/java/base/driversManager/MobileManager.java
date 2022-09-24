@@ -1,22 +1,19 @@
 package base.driversManager;
 
+import base.listeners.DriverEventListener;
 import base.mobile.AppiumFluentWaitExtensions;
 import base.propertyConfig.PropertyConfig;
-import base.reports.extentManager.ExtentLogger;
-import base.reports.ReportStepRepository;
-import base.reports.ReportTestRepository;
 import base.reports.testFilters.*;
 import com.aventstack.extentreports.Status;
-import com.aventstack.extentreports.markuputils.CodeLanguage;
-import com.aventstack.extentreports.markuputils.MarkupHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.testng.Assert;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import static base.reports.extentManager.ExtentLogger.reportTest;
 
 @Slf4j
 public class MobileManager {
@@ -66,51 +63,22 @@ public class MobileManager {
                     break;
             }
         }
+
         if (DriverManager.getLocalDriver() == null) {
-            Assert.fail("DriverManager.getLocalDriver() = null");
+            reportTest(new Reasons(Status.FAIL,"init","init" ,TestCategory.DRIVER, TestSeverity.HIGH,"fail init driver"));
         }
-        return DriverManager.getLocalDriver();
+
+        if (DriverManager.getEventFiringWebDriver() == null) {
+            DriverManager.setEventFiringWebDriver(new EventFiringWebDriver(DriverManager.getLocalDriver()));
+            DriverManager.getEventFiringWebDriver().register(new DriverEventListener());
+        }
+        return DriverManager.getEventFiringWebDriver();
     }
 
     /*** on after all or after each */
     public static void tearDown() {
         if (DriverManager.getLocalDriver() != null) DriverManager.getLocalDriver().quit();
         if (AppiumServerManager.getServer() != null) AppiumServerManager.getServer().stop();
-    }
-
-    public static void reportTest(Reasons reportTestDto) {
-        ReportTestRepository.getInstance().save(reportTestDto);
-        ExtentLogger.loggerPrint(reportTestDto.getTestStatus(), "report description: " + reportTestDto.getDescription());
-        if (reportTestDto.getTestStatus() == Status.FAIL || reportTestDto.getTestStatus() == Status.SKIP) {
-            Assert.fail(reportTestDto.getTestStatus().toString() + "," + reportTestDto);
-        }
-    }
-
-    public static void reportTest(Reasons reportTestDto, CodeLanguage codeLanguage) {
-        ReportTestRepository.getInstance().save(reportTestDto);
-        ExtentLogger.loggerPrint(reportTestDto.getTestStatus(), MarkupHelper.createCodeBlock(reportTestDto.getDescription(), codeLanguage));
-        if (reportTestDto.getTestStatus() == Status.FAIL || reportTestDto.getTestStatus() == Status.SKIP) {
-            Assert.fail(reportTestDto.getTestStatus().toString() + "," + reportTestDto);
-        }
-    }
-
-    public static void reportStepTest(ReasonsStep reportStepDto) {
-        ReportStepRepository.getInstance().save(reportStepDto);
-
-        String step = reportStepDto.getStepId();
-        String desc = reportStepDto.getDescription();
-        log.info(step + " " + desc);
-        ExtentLogger.loggerPrint(reportStepDto.getStatus(), step + " " + desc);
-        if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
-            Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
-        }
-    }
-    public static void reportStepTest(ReasonsStep reportStepDto, CodeLanguage codeLanguage) {
-        ReportStepRepository.getInstance().save(reportStepDto);
-        ExtentLogger.loggerPrint(reportStepDto.getStatus(), MarkupHelper.createCodeBlock(reportStepDto.getDescription(), codeLanguage));
-        if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
-            Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
-        }
     }
 
     public void sleepSeconds(int timeOut) {
@@ -136,7 +104,9 @@ public class MobileManager {
     public static String screenshot() {
         try {
             if (DriverManager.getLocalDriver() != null) {
-                return ((TakesScreenshot) DriverManager.getLocalDriver()).getScreenshotAs(OutputType.BASE64);
+                return ((TakesScreenshot) DriverManager
+                        .getLocalDriver())
+                        .getScreenshotAs(OutputType.BASE64);
             }
         } catch (Exception exception) {
             log.error("screen shot error " + exception.getMessage());

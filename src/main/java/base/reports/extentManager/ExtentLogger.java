@@ -1,8 +1,13 @@
 package base.reports.extentManager;
 
 import base.anontations.CategoryType;
+import base.reports.ReportStepRepository;
+import base.reports.ReportTestRepository;
+import base.reports.testFilters.Reasons;
+import base.reports.testFilters.ReasonsStep;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.markuputils.CodeLanguage;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.Markup;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
@@ -10,12 +15,48 @@ import com.aventstack.extentreports.model.Media;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import lombok.extern.slf4j.Slf4j;
+import org.testng.Assert;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
 public final class ExtentLogger {
+
+    public static void reportTest(Reasons reportTestDto) {
+        ReportTestRepository.getInstance().save(reportTestDto);
+        ExtentLogger.loggerPrint(reportTestDto.getTestStatus(), "report description: " + reportTestDto.getDescription());
+        if (reportTestDto.getTestStatus() == Status.FAIL || reportTestDto.getTestStatus() == Status.SKIP) {
+            Assert.fail(reportTestDto.getTestStatus().toString() + "," + reportTestDto);
+        }
+    }
+
+    public static void reportTest(Reasons reportTestDto, CodeLanguage codeLanguage) {
+        ReportTestRepository.getInstance().save(reportTestDto);
+        ExtentLogger.loggerPrint(reportTestDto.getTestStatus(), MarkupHelper.createCodeBlock(reportTestDto.getDescription(), codeLanguage));
+        if (reportTestDto.getTestStatus() == Status.FAIL || reportTestDto.getTestStatus() == Status.SKIP) {
+            Assert.fail(reportTestDto.getTestStatus().toString() + "," + reportTestDto);
+        }
+    }
+
+    public static void reportStepTest(ReasonsStep reportStepDto) {
+        ReportStepRepository.getInstance().save(reportStepDto);
+        String step = reportStepDto.getStepId();
+        String desc = reportStepDto.getDescription();
+        ExtentLogger.loggerPrint(reportStepDto.getStatus(), step + " " + desc);
+        if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
+            Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
+        }
+    }
+    public static void reportStepTest(ReasonsStep reportStepDto, CodeLanguage codeLanguage) {
+        ReportStepRepository.getInstance().save(reportStepDto);
+        ExtentLogger.loggerPrint(reportStepDto.getStatus(), MarkupHelper.createCodeBlock(reportStepDto.getDescription(), codeLanguage));
+        if (reportStepDto.getStatus() == Status.FAIL || reportStepDto.getStatus() == Status.SKIP) {
+            Assert.fail(reportStepDto.getStatus().toString() + " , " + reportStepDto);
+        }
+    }
+
     public static void initReports(String extentSparkPath, String jsonTemplate) {
         ExtentReportManager.setExtentReports(new ExtentReports());
         ExtentSparkReporter sparkReporter = new ExtentSparkReporter(extentSparkPath);
@@ -35,7 +76,7 @@ public final class ExtentLogger {
     }
 
     public static void loggerPrint(Status status, String description) {
-         ExtentReportManager.getExtentTest().get().log(status, description);
+        ExtentReportManager.getExtentTest().get().log(status, description);
     }
 
     public static void loggerPrint(Status status, Markup markup) {
@@ -96,5 +137,7 @@ public final class ExtentLogger {
             ExtentReportManager.getExtentTest().get().assignCategory(category.toString());
         }
     }
-
+    public static void addSuite(String suite) {
+        ExtentReportManager.getExtentTest().get().assignCategory(suite);
+    }
 }

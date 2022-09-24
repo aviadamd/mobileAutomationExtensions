@@ -20,7 +20,6 @@ import java.util.*;
 @Slf4j
 @SuppressWarnings("deprecation")
 public class MobileListener extends MobileManager implements ITestListener {
-
     public static Set<ITestResult> failTests = new HashSet<>();
     //before all
     @Override

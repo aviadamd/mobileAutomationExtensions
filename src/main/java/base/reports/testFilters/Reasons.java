@@ -8,7 +8,6 @@ import java.util.List;
 public class Reasons extends BasicDBObject {
 
     static final long serialVersionUID = 2105061907470199595L;
-
     private final String testId;
     private final String testName;
     private Status testStatus;
@@ -17,8 +16,15 @@ public class Reasons extends BasicDBObject {
     private String description;
     private List<ReasonsStep> reasonsStep = new ArrayList<>();
 
-    public Reasons(Status testStatus, String testId, String testName,
-            TestCategory category, TestSeverity severity, String description) {
+    public Reasons(Status testStatus, String testId, String testName, String description) {
+        this.testId = testId;
+        this.testName = testName;
+        this.testStatus = testStatus;
+        this.category = TestCategory.NONE;
+        this.severity = TestSeverity.NONE;
+        this.description = description;
+    }
+    public Reasons(Status testStatus, String testId, String testName, TestCategory category, TestSeverity severity, String description) {
         this.testId = testId;
         this.testName = testName;
         this.testStatus = testStatus;
@@ -27,9 +33,7 @@ public class Reasons extends BasicDBObject {
         this.description = description;
     }
 
-    public Reasons(Status testStatus, String testId, String testName,
-            TestCategory category, TestSeverity severity,
-            String description, List<ReasonsStep> reasonsStep) {
+    public Reasons(Status testStatus, String testId, String testName, TestCategory category, TestSeverity severity, String description, List<ReasonsStep> reasonsStep) {
         this.testId = testId;
         this.testName = testName;
         this.testStatus = testStatus;

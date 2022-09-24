@@ -11,6 +11,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import java.net.URL;
 
+import static base.reports.extentManager.ExtentLogger.reportTest;
+
 @Slf4j
 public class IosWebDriverManager extends MobileManager {
 

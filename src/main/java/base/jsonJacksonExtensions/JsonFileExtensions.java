@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 @Slf4j
 public class JsonFileExtensions extends MobileManager {
 

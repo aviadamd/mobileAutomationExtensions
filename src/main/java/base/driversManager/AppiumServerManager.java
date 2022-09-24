@@ -10,7 +10,8 @@ import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
-import static base.driversManager.MobileManager.reportTest;
+
+import static base.reports.extentManager.ExtentLogger.reportTest;
 
 public class AppiumServerManager {
 

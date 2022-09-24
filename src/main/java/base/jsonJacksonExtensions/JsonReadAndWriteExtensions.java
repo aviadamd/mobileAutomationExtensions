@@ -4,6 +4,7 @@ import base.driversManager.MobileManager;
 import com.aventstack.extentreports.Status;
 import com.fasterxml.jackson.databind.MappingIterator;
 
+import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -13,6 +14,11 @@ public class JsonReadAndWriteExtensions extends MobileManager {
     private final JsonReaderExtensions jsonReaderExtensions;
     private final JsonWriterExtensions jsonWriterExtensions;
 
+    public JsonReadAndWriteExtensions(String filePath) {
+        File file = new File(filePath);
+        this.jsonWriterExtensions = new JsonWriterExtensions(file);
+        this.jsonReaderExtensions = new JsonReaderExtensions(file);
+    }
     /**
      *
      * @param fileName

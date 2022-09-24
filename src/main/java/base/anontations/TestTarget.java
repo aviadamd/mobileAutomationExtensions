@@ -11,4 +11,5 @@ public @interface TestTarget {
     String testId() default "";
     String[] author() default "unknownAuthor";
     CategoryType[] category() default CategoryType.SANITY;
+    String suiteName() default "";
 }

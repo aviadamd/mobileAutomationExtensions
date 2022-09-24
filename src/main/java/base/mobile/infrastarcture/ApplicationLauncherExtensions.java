@@ -8,6 +8,8 @@ import base.reports.testFilters.TestCategory;
 import base.reports.testFilters.TestSeverity;
 import com.aventstack.extentreports.Status;
 
+import static base.reports.extentManager.ExtentLogger.reportStepTest;
+
 public class ApplicationLauncherExtensions extends MobileManager {
 
     private String setAppActivity = "";

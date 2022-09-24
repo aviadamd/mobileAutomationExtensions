@@ -11,6 +11,8 @@ import org.openqa.selenium.logging.LogEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+
+import static base.reports.extentManager.ExtentLogger.reportTest;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
