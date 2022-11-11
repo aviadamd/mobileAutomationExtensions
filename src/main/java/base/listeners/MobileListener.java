@@ -1,5 +1,6 @@
 package base.listeners;
 
+import base.CreateReportExtra;
 import base.anontations.TestTarget;
 import base.driversManager.MobileManager;
 import base.reports.extentManager.ExtentLogger;
@@ -13,6 +14,7 @@ import base.reports.testFilters.*;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.testng.*;
 import org.testng.annotations.Test;
 import java.util.*;
@@ -20,7 +22,9 @@ import java.util.*;
 @Slf4j
 @SuppressWarnings("deprecation")
 public class MobileListener extends MobileManager implements ITestListener {
-    public static Set<ITestResult> failTests = new HashSet<>();
+    private static final List<TestCategory> filterByList = new ArrayList<>();
+    private static Pair<Boolean, Status[]> reportStatus = Pair.of(false, new Status[]{Status.FAIL});
+
     //before all
     @Override
     public void onStart(ITestContext context) {
@@ -32,6 +36,7 @@ public class MobileListener extends MobileManager implements ITestListener {
     //before test
     @Override
     public void onTestStart(ITestResult iTestResult) {
+        addCreateReportExtra(iTestResult);
         String testId = iTestResult.getMethod().getMethod().getAnnotation(TestTarget.class).testId();
         String methodTestName = iTestResult.getMethod().getMethod().getAnnotation(Test.class).description();
         ExtentLogger.createTest(methodTestName, getProperty().getDeviceName());
@@ -45,7 +50,7 @@ public class MobileListener extends MobileManager implements ITestListener {
         String methodTestName = iTestResult.getMethod().getMethod().getAnnotation(Test.class).description();
         String testId = iTestResult.getMethod().getMethod().getAnnotation(TestTarget.class).testId();
         Reasons reasons = MobileListenerManger.insertTestPassData(testId, methodTestName, screenshot());
-        MobileListenerManger.updateTestStatus(reasons, testId, methodTestName, Status.PASS);
+        MobileListenerManger.updateMongoTestStatus(reasons, testId, methodTestName, Status.PASS);
     }
 
     @Override
@@ -53,9 +58,8 @@ public class MobileListener extends MobileManager implements ITestListener {
         String methodTestName = iTestResult.getMethod().getMethod().getAnnotation(Test.class).description();
         String testId = iTestResult.getMethod().getMethod().getAnnotation(TestTarget.class).testId();
         Reasons reasons = MobileListenerManger.insertTestFailData(testId, iTestResult, methodTestName, screenshot(), Status.FAIL, ExtentColor.BLUE);
-        MobileListenerManger.updateTestStatus(reasons, testId, methodTestName, Status.FAIL);
+        MobileListenerManger.updateMongoTestStatus(reasons, testId, methodTestName, Status.FAIL);
         ExtentLogger.loggerPrint(Status.FAIL, reasons.toString());
-        failTests.add(iTestResult);
     }
 
     @Override
@@ -63,14 +67,16 @@ public class MobileListener extends MobileManager implements ITestListener {
         String methodTestName = iTestResult.getMethod().getMethod().getAnnotation(Test.class).description();
         String testId = iTestResult.getMethod().getMethod().getAnnotation(TestTarget.class).testId();
         Reasons reasons = MobileListenerManger.insertTestFailData(testId, iTestResult, methodTestName, screenshot(), Status.SKIP, ExtentColor.ORANGE);
-        MobileListenerManger.updateTestStatus(reasons, testId, methodTestName, Status.SKIP);
+        MobileListenerManger.updateMongoTestStatus(reasons, testId, methodTestName, Status.SKIP);
         ExtentLogger.loggerPrint(Status.SKIP, reasons.toString());
-        failTests.add(iTestResult);
     }
-
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult iTestResult) {
-        failTests.add(iTestResult);
+        String methodTestName = iTestResult.getMethod().getMethod().getAnnotation(Test.class).description();
+        String testId = iTestResult.getMethod().getMethod().getAnnotation(TestTarget.class).testId();
+        Reasons reasons = MobileListenerManger.insertTestFailData(testId, iTestResult, methodTestName, screenshot(), Status.FAIL, ExtentColor.BLUE);
+        MobileListenerManger.updateMongoTestStatus(reasons, testId, methodTestName, Status.FAIL);
+        ExtentLogger.loggerPrint(Status.FAIL, reasons.toString());
     }
 
     //after all
@@ -79,12 +85,25 @@ public class MobileListener extends MobileManager implements ITestListener {
         Set<ITestResult> failTests = context.getFailedTests().getAllResults();
         Set<ITestResult> passTests = context.getPassedTests().getAllResults();
         Set<ITestResult> skipTests = context.getSkippedTests().getAllResults();
-
         log.info("pass tests:" + passTests.size() + ", fail tests: " + failTests.size() + ", skip tests: " + skipTests.size());
-        ExtentLogger.setExtraReports(Map.of("target/SparkFail.html", Status.FAIL, "target/SparkSkip.html", Status.SKIP, "target/SparkPass.html", Status.PASS));
+        ExtentLogger.setExtraReports("target", reportStatus.getRight());
+        ExtentLogger.assignTestCategory(filterByList);
         ExtentLogger.flushReports();
         ReportStepRepository.getInstance().deleteAll();
         ReportTestRepository.getInstance().deleteAll();
         MongoExtensionsManager.getMongoInstance().close();
+    }
+    private static void addCreateReportExtra(ITestResult iTestResult) {
+        if (!reportStatus.getLeft()) {
+            Optional.ofNullable(iTestResult.getTestClass().getRealClass().getAnnotation(CreateReportExtra.class)).ifPresent(reportExtra -> {
+                reportStatus = Pair.of(true, reportExtra.reportStatus());
+                if (reportExtra.filterBy().length != 0) {
+                    for (TestCategory filterBy : reportExtra.filterBy()) {
+                        if (filterBy == TestCategory.NONE) break;
+                        filterByList.add(filterBy);
+                    }
+                }
+            });
+        }
     }
 }

@@ -7,6 +7,13 @@ import base.mobile.infrastarcture.InfraStructuresExtensions;
 import com.aventstack.extentreports.Status;
 
 public class MobileExtensionsObjects extends MobileManager {
+
+    private String stepNumber = "";
+
+    public MobileExtensionsObjects setStep(String stepNumber) {
+        this.stepNumber = stepNumber;
+        return this;
+    }
     public final ElementGetTextsExtensions elementGetTextsExtensions;
     public final ElementsSearchExtensions elementsSearchExtensions;
     public final DeepLinksExtensions deepLinksExtensions;

@@ -45,7 +45,7 @@ public class MobileListenerManger extends MobileManager {
         ExtentLogger.loggerPrint(status, ExtentLogger.createExpend("Exception", Arrays.toString(iTestResult.getThrowable().getStackTrace()), extentColor));
         return reasons;
     }
-    static void updateTestStatus(Reasons reasons, String testId, String methodTestName, Status status) {
+    static void updateMongoTestStatus(Reasons reasons, String testId, String methodTestName, Status status) {
         Document setDocument = updateDocument(testId, methodTestName, status);
         if (setDocument.isEmpty()) setDocument = ReasonsDtoAdapter.toDocument(reasons);
         ExtentLogger.loggerPrint(status, ExtentLogger.createExpend("Test Json Info", setDocument.toJson(), ExtentColor.BLUE));

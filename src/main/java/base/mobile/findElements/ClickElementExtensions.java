@@ -23,7 +23,6 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.time.Duration;
-
 import static base.reports.extentManager.ExtentLogger.reportStepTest;
 import static io.appium.java_client.touch.LongPressOptions.longPressOptions;
 
@@ -50,11 +49,9 @@ public class ClickElementExtensions extends MobileManager {
     public IntegrateReport<MobileExtensionsObjects> clickElement(By by, String desc) {
         return this.clickElement(ExpectedConditions.elementToBeClickable(by), desc);
     }
-
-    public IntegrateReport<MobileExtensionsObjects> clickElement(WebElement element, String desc) {
+    public IntegrateReport<MobileExtensionsObjects> clickElement(WebElement element, String desc)  {
         return this.clickElement(ExpectedConditions.elementToBeClickable(element), desc);
     }
-
     public IntegrateReport<MobileExtensionsObjects> clickElement(ExpectedCondition<WebElement> conditions, String desc) {
         ReasonsStep reportStep;
         try {
@@ -62,15 +59,14 @@ public class ClickElementExtensions extends MobileManager {
                     .appiumFluentWait()
                     .until(conditions)
                     .click();
-           reportStep = new ReasonsStep(Status.PASS, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, this.stepNumber + " step pass click on " + desc);
+           reportStep = new ReasonsStep(Status.PASS, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE," pass click on " + desc);
         } catch (Exception exception) {
-            reportStep = new ReasonsStep(this.status, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE, desc + " fail to click on element " + exception.getMessage());
+            reportStep = new ReasonsStep(this.status, this.stepNumber, TestCategory.DRIVER, TestSeverity.NONE,desc + " fail to click on element " + exception.getMessage());
         }
         reportStepTest(reportStep);
         return new IntegrateReport<>(reportStep, new MobileExtensionsObjects());
     }
-
-    public IntegrateReport<MobileExtensionsObjects> tapElement(WebElement element) {
+    public IntegrateReport<MobileExtensionsObjects> tapElement(WebElement element) throws Exception {
         ReasonsStep reportStep;
         try {
             this.appiumFluentWaitExtensions(this.elementTo, this.pollingEvery)
@@ -150,7 +146,7 @@ public class ClickElementExtensions extends MobileManager {
     }
 
     @SuppressWarnings("rawtypes")
-    public IntegrateReport<ClickElementExtensions> longPressElement(WebElement element, long millis) {
+    public IntegrateReport<ClickElementExtensions> longPressElement(WebElement element, long millis) throws Exception {
         ReasonsStep step;
         try {
             (new TouchAction((AppiumDriver) getDriver()))
@@ -166,7 +162,7 @@ public class ClickElementExtensions extends MobileManager {
         return new IntegrateReport<>(step, this);
     }
 
-    public IntegrateReport<ClickElementExtensions> clickByString(String name, int timeOut) {
+    public IntegrateReport<ClickElementExtensions> clickByString(String name, int timeOut) throws Exception {
         ReasonsStep step;
         try {
             String generateXpath = ElementsConstants.xpathWithOptions(name);

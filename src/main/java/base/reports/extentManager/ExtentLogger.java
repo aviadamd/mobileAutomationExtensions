@@ -5,6 +5,7 @@ import base.reports.ReportStepRepository;
 import base.reports.ReportTestRepository;
 import base.reports.testFilters.Reasons;
 import base.reports.testFilters.ReasonsStep;
+import base.reports.testFilters.TestCategory;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.CodeLanguage;
@@ -19,7 +20,9 @@ import org.testng.Assert;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public final class ExtentLogger {
@@ -88,24 +91,61 @@ public final class ExtentLogger {
     }
     public static void flushReports() {
         ExtentReportManager.getExtentReports().get().flush();
-        ExtentReportManager.getExtentTest().remove();
+        ExtentReportManager.unloadExtentReport();
+        ExtentReportManager.unloadExtentTest();
     }
     public static void setExtraReports(Map<String,Status> statusReport) {
-        statusReport.forEach((fileLocation, status) -> {
-            ExtentSparkReporter sparkReporter = new ExtentSparkReporter(fileLocation);
-            sparkReporter
-                    .filter()
-                    .statusFilter()
-                    .as(new Status[]{status})
-                    .apply();
-            ExtentReportManager.getExtentReports().get().attachReporter(sparkReporter);
+        Optional.ofNullable(statusReport).ifPresent(stringStatusMap -> {
+            stringStatusMap.forEach((fileLocation, status) -> {
+                ExtentSparkReporter sparkReporter = new ExtentSparkReporter(fileLocation);
+                sparkReporter
+                        .filter()
+                        .statusFilter()
+                        .as(new Status[]{status})
+                        .apply();
+                ExtentReportManager.getExtentReports().get().attachReporter(sparkReporter);
+            });
         });
     }
-    public static void setExtraReports(String reportLocation, Status statusBy) {
+
+    public static void setExtraReports(String reportLocation, TestCategory testCategory) {
+        if (Optional.ofNullable(reportLocation).isPresent()) {
+            ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportLocation + "/" + testCategory.getText() + ".html");
+            ExtentReportManager.getExtentReports().get().attachReporter(sparkReporter);
+        }
+    }
+
+    public static void setExtraReports(String reportLocation, Status[] statusBy) {
+        if (Optional.ofNullable(reportLocation).isPresent()) {
+            Optional.ofNullable(statusBy).ifPresent(statuses -> {
+                for (Status status : statuses) {
+                    ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportLocation + "/" + status.toString() + ".html");
+                    sparkReporter
+                            .filter()
+                            .statusFilter()
+                            .as(new Status[]{status})
+                            .apply();
+                    ExtentReportManager.getExtentReports().get().attachReporter(sparkReporter);
+                }
+            });
+        }
+    }
+
+    public static void assignTestCategory(List<TestCategory> filterByList) {
+        if (filterByList.size() > 0) {
+            Reasons reasons = ReportTestRepository.getInstance().getLastObject();
+            for (TestCategory testCategory: filterByList) {
+                if (reasons.getTestStatus() == Status.FAIL && reasons.getCategory() == testCategory) {
+                    ExtentLogger.addCategory(reasons.getCategory().getText());
+                }
+            }
+        }
+    }
+    public static void setExtraReports(String reportLocation, List<Status> statusBy) {
         ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportLocation);
         sparkReporter.filter()
                 .statusFilter()
-                .as(new Status[]{statusBy})
+                .as(statusBy)
                 .apply();
         ExtentReportManager.getExtentReports().get().attachReporter(sparkReporter);
     }
@@ -128,16 +168,28 @@ public final class ExtentLogger {
         );
     }
     public static void addAuthors(String[] authors) {
-        for (String author : authors) {
-            ExtentReportManager.getExtentTest().get().assignAuthor(author);
-        }
+        Optional.ofNullable(authors).ifPresent(authorsE -> {
+            for (String author : authorsE) {
+                ExtentReportManager.getExtentTest().get().assignAuthor(author);
+            }
+        });
+    }
+
+        public static void addCategory(String testCategory) {
+        Optional.ofNullable(testCategory).ifPresent(category -> {
+            ExtentReportManager.getExtentTest().get().assignCategory(testCategory);
+        });
     }
     public static void addCategories(CategoryType[] categories) {
-        for (CategoryType category : categories) {
-            ExtentReportManager.getExtentTest().get().assignCategory(category.toString());
-        }
+        Optional.of(categories).ifPresent(categoryTypes -> {
+            for (CategoryType category : categoryTypes) {
+                ExtentReportManager.getExtentTest().get().assignCategory(category.toString());
+            }
+        });
     }
     public static void addSuite(String suite) {
-        ExtentReportManager.getExtentTest().get().assignCategory(suite);
+        Optional.ofNullable(suite).ifPresent(s -> {
+            ExtentReportManager.getExtentTest().get().assignCategory(s);
+        });
     }
 }
