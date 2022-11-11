@@ -17,8 +17,8 @@ import java.net.URL;
 @Slf4j
 @Description("use as a class that extends DriverManager abstract class template")
 public class AndroidWebDriverManager extends MobileManager {
+    private DesiredCapabilities capabilities = new DesiredCapabilities();
 
-    private DesiredCapabilities capabilities;
     public AndroidWebDriverManager addCapabilitiesExtra(DesiredCapabilities capabilities) {
         this.capabilities = capabilities;
         return this;
@@ -28,16 +28,18 @@ public class AndroidWebDriverManager extends MobileManager {
         AndroidDriver<WebElement> androidDriver = null;
         try {
             androidDriver = new AndroidDriver<>(url, this.initCapabilities());
-            ReportStepRepository.getInstance().save(new ReasonsStep(Status.PASS,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"pass init android driver"));
+            ReportStepRepository.getInstance().save(
+                    new ReasonsStep(Status.PASS,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"pass init android driver"));
         } catch (Exception appiumEx) {
-            ReportStepRepository.getInstance().save(new ReasonsStep(Status.FAIL,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver"));
+            ReportStepRepository.getInstance().save(
+                    new ReasonsStep(Status.FAIL,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver " + appiumEx.getMessage()));
         }
         return androidDriver;
     }
 
-
     private DesiredCapabilities initCapabilities() {
         DesiredCapabilities capabilities = new DesiredCapabilities();
+
         capabilities.setCapability("appium:app", getProperty().getAppPath());
         capabilities.setCapability("appium:appPackage", getProperty().getAppNamePackage());
         capabilities.setCapability("appium:automationName", "UiAutomator2");
@@ -47,9 +49,11 @@ public class AndroidWebDriverManager extends MobileManager {
         capabilities.setCapability("newCommandTimeout", MobileStringsUtilities.toInt("15000", 15000));
         capabilities.setCapability("appium:autoGrantPermissions", true);
         capabilities.setCapability("appium:noReset", true);
-        if (this.capabilities != null) {
+
+        if (this.capabilities != null && !this.capabilities.asMap().isEmpty()) {
             capabilities.merge(this.capabilities);
         }
+
         return capabilities;
     }
 }

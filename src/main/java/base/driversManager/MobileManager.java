@@ -13,6 +13,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+
+import static base.driversManager.DriverManager.unloadLocalEvent;
 import static base.reports.extentManager.ExtentLogger.reportTest;
 
 @Slf4j
@@ -77,8 +79,18 @@ public class MobileManager {
 
     /*** on after all or after each */
     public static void tearDown() {
-        if (DriverManager.getLocalDriver() != null) DriverManager.getLocalDriver().quit();
-        if (AppiumServerManager.getServer() != null) AppiumServerManager.getServer().stop();
+        if (DriverManager.getLocalDriver() != null) {
+            DriverManager.getLocalDriver().quit();
+            DriverManager.unloadLocalDriver();
+        }
+        if (AppiumServerManager.getServer() != null) {
+            AppiumServerManager.getServer().stop();
+            AppiumServerManager.flush();
+        }
+
+        if (DriverManager.getEventFiringWebDriver() != null) {
+            DriverManager.unloadLocalEvent();
+        }
     }
 
     public void sleepSeconds(int timeOut) {

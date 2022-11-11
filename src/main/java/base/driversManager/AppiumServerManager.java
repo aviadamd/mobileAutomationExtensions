@@ -16,7 +16,7 @@ import static base.reports.extentManager.ExtentLogger.reportTest;
 public class AppiumServerManager {
 
     private AppiumServerManager() {}
-    private static ThreadLocal<AppiumDriverLocalService> server = new ThreadLocal<>();
+    private static final ThreadLocal<AppiumDriverLocalService> server = new ThreadLocal<>();
 
     public static void setServer(AppiumDriverLocalService server) {
         AppiumServerManager.server.set(server);
