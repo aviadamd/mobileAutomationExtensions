@@ -39,7 +39,7 @@ public class StepFlowExtensions extends MobileExtensionsObjects {
         ExtentLogger.loggerPrint(Status.INFO, "execution of steps id: " + stepId + ", description: " + stepDescription + " finish");
         return this;
     }
-    public <E extends Exception> StepFlowExtensions steps(
+    public <E extends Exception> StepFlowExtensions  steps(
             String stepId, String stepDescription, Consumer<MobileExtensionsObjects> consumer, Class<E> clazz) {
         try {
             this.setStep(stepId);

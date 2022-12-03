@@ -33,7 +33,8 @@ public class Reasons extends BasicDBObject {
         this.description = description;
     }
 
-    public Reasons(Status testStatus, String testId, String testName, TestCategory category, TestSeverity severity, String description, List<ReasonsStep> reasonsStep) {
+    public Reasons(Status testStatus, String testId, String testName, TestCategory category, TestSeverity severity, String description,
+                   List<ReasonsStep> reasonsStep) {
         this.testId = testId;
         this.testName = testName;
         this.testStatus = testStatus;
@@ -50,7 +51,6 @@ public class Reasons extends BasicDBObject {
     public TestSeverity getSeverity() { return this.severity; }
     public String getDescription() { return this.description; }
     public List<ReasonsStep> getReasonsStep() { return reasonsStep; }
-
     public void setTestStatus(Status testStatus) {
         this.testStatus = testStatus;
     }

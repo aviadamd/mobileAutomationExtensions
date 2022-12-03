@@ -3,7 +3,6 @@ package base.jsonJacksonExtensions;
 import base.driversManager.MobileManager;
 import com.aventstack.extentreports.Status;
 import com.fasterxml.jackson.databind.MappingIterator;
-
 import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
@@ -13,6 +12,13 @@ public class JsonReadAndWriteExtensions extends MobileManager {
 
     private final JsonReaderExtensions jsonReaderExtensions;
     private final JsonWriterExtensions jsonWriterExtensions;
+
+    private String targetPath = "/target/jsonFiles";
+
+    public JsonReadAndWriteExtensions setTargetPath(String targetPath) {
+        this.targetPath = targetPath;
+        return this;
+    }
 
     public JsonReadAndWriteExtensions(String filePath) {
         File file = new File(filePath);
@@ -36,8 +42,12 @@ public class JsonReadAndWriteExtensions extends MobileManager {
      */
     public JsonReadAndWriteExtensions(String fileName, int fileId, long jsonFileSizeLimit) {
         JsonFileExtensions jsonFileExtensions = new JsonFileExtensions();
-        FileGeneratorExtensions createNewFile = jsonFileExtensions.register(fileName, fileId, jsonFileSizeLimit);
+
+        FileGeneratorExtensions createNewFile = jsonFileExtensions
+                .setTargetPath(this.targetPath)
+                .register(fileName, fileId, jsonFileSizeLimit);
         jsonFileExtensions.verifyInitiation(fileName, createNewFile, Status.INFO);
+
         this.jsonReaderExtensions = new JsonReaderExtensions(createNewFile.getFile());
         this.jsonWriterExtensions = new JsonWriterExtensions(createNewFile.getFile());
     }

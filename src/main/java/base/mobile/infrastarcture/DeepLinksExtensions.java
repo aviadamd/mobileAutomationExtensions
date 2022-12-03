@@ -1,10 +1,8 @@
 package base.mobile.infrastarcture;
 
 import base.driversManager.MobileManager;
-import base.mobile.MobileExtensionsObjects;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriverException;
-import org.springframework.context.annotation.Description;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +28,6 @@ public class DeepLinksExtensions extends MobileManager {
         return this;
     }
 
-    @Description("set deep link params number")
     public void executeDeepLink() {
         String url = this.deepLinkUrl + this.deepLinksNumber;
 

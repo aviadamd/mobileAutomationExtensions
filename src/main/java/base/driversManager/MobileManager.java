@@ -48,7 +48,7 @@ public class MobileManager {
     public static WebDriver getDriver() {
         if (AppiumServerManager.getServer() == null) {
             AppiumServerManager.setServer(AppiumServerManager.initServer(getProperty().getNodeJs(), getProperty().getAppiumMainJsPath()));
-            AppiumServerManager.getServer().start();
+            AppiumServerManager.startServer();
         }
 
         if (DriverManager.getLocalDriver() == null) {

@@ -10,12 +10,10 @@ import io.appium.java_client.android.AndroidDriver;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.springframework.context.annotation.Description;
 
 import java.net.URL;
 
 @Slf4j
-@Description("use as a class that extends DriverManager abstract class template")
 public class AndroidWebDriverManager extends MobileManager {
     private DesiredCapabilities capabilities = new DesiredCapabilities();
 
@@ -28,11 +26,9 @@ public class AndroidWebDriverManager extends MobileManager {
         AndroidDriver<WebElement> androidDriver = null;
         try {
             androidDriver = new AndroidDriver<>(url, this.initCapabilities());
-            ReportStepRepository.getInstance().save(
-                    new ReasonsStep(Status.PASS,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"pass init android driver"));
+            ReportStepRepository.getInstance().save(new ReasonsStep(Status.PASS,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"pass init android driver"));
         } catch (Exception appiumEx) {
-            ReportStepRepository.getInstance().save(
-                    new ReasonsStep(Status.FAIL,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver " + appiumEx.getMessage()));
+            ReportStepRepository.getInstance().save(new ReasonsStep(Status.FAIL,"init" ,TestCategory.APPIUM, TestSeverity.HIGH,"fail init android driver " + appiumEx.getMessage()));
         }
         return androidDriver;
     }
@@ -47,6 +43,7 @@ public class AndroidWebDriverManager extends MobileManager {
         capabilities.setCapability("avd", getProperty().getDeviceName());
         capabilities.setCapability("udid", getProperty().getDeviceName());
         capabilities.setCapability("newCommandTimeout", MobileStringsUtilities.toInt("15000", 15000));
+        capabilities.setCapability("androidDeviceReadyTimeout", 30);
         capabilities.setCapability("appium:autoGrantPermissions", true);
         capabilities.setCapability("appium:noReset", true);
 

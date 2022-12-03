@@ -2,7 +2,6 @@ package base.staticData;
 
 import base.mobile.enums.DividedList;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Description;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -108,7 +107,6 @@ public class CollectionExtensions {
      * @param givenList a given String list
      * @return returns a random item in a string list
      */
-    @Description("getRandomItemFromAList ")
     public String getRandomItemFromAList(List<String> givenList) {
         if (givenList.size() == 0) {
             String listName = givenList.toString() != null ? givenList.toString() : "";

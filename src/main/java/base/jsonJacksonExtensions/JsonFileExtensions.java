@@ -1,6 +1,9 @@
 package base.jsonJacksonExtensions;
 
 import base.driversManager.MobileManager;
+import base.reports.extentManager.ExtentLogger;
+import base.reports.extentManager.ExtentReportManager;
+import base.reports.testFilters.Reasons;
 import com.aventstack.extentreports.Status;
 import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
@@ -10,8 +13,18 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static base.reports.extentManager.ExtentLogger.reportTest;
+
 @Slf4j
 public class JsonFileExtensions extends MobileManager {
+
+    private String targetPath = "/target/jsonFiles";
+
+    public JsonFileExtensions setTargetPath(String targetPath) {
+        this.targetPath = targetPath;
+        return this;
+    }
 
     /**
      * verifyInitiation of the file path
@@ -20,13 +33,10 @@ public class JsonFileExtensions extends MobileManager {
      */
     public void verifyInitiation(String path, FileGeneratorExtensions file, Status status) {
         if (file == null || file.getFile() == null || file.getPath() == null) {
-            if (status == Status.FAIL) {
-
-            }
+            if (status == Status.FAIL) reportTest(Status.FAIL,"File params ate not valid " + path);
             log.error("File params ate not valid " + path);
         }
     }
-
     /**
      * @param fileName fileName
      * @param fileId file id
@@ -35,7 +45,7 @@ public class JsonFileExtensions extends MobileManager {
      */
     public FileGeneratorExtensions register(String fileName, int fileId, long jsonLimitSize) {
         String userDir = System.getProperty("user.dir");
-        String dir = this.createDir(userDir + "/target/jsonFiles");
+        String dir = this.createDir(userDir + this.targetPath);
         log.info("create json dir: " + dir);
 
         FileGeneratorExtensions register = this.registerOldFile(fileId, userDir, fileName, jsonLimitSize);

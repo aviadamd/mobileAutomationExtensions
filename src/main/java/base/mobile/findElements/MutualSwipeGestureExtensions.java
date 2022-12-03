@@ -1,7 +1,6 @@
 package base.mobile.findElements;
 
 import base.driversManager.MobileManager;
-import base.mobile.MobileExtensionsObjects;
 import base.mobile.enums.ScrollDirection;
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.AppiumDriver;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
-import org.springframework.context.annotation.Description;
 import java.time.Duration;
 
 @Slf4j
@@ -117,14 +115,12 @@ public class MutualSwipeGestureExtensions extends MobileManager {
         }
     }
 
-    @Description("swipe ")
     public void swipeOverTimes(ScrollDirection direction, int times, String desc) {
         for (int i = 1; i < times; i++) {
             this.swipe(true, direction, desc);
         }
     }
 
-    @Description("swipe ")
     @SuppressWarnings("rawtypes")
     public void swipe(boolean activate, ScrollDirection direction, String desc) {
         if (activate) {

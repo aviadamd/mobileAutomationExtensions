@@ -11,8 +11,6 @@ import io.appium.java_client.ios.IOSDriver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.ScreenOrientation;
-import org.springframework.context.annotation.Description;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +38,6 @@ public class InfraStructuresExtensions extends MobileManager {
         return ((AndroidDriver) getDriver());
     }
 
-    @Description("getCurrentActivity ")
     public String getCurrentActivity() {
         try {
             return androidDriver().currentActivity();
@@ -50,7 +47,6 @@ public class InfraStructuresExtensions extends MobileManager {
         }
     }
 
-    @Description("getCurrentAppPackage ")
     public String getCurrentAppPackage() {
         try {
             return androidDriver().getCurrentPackage();
@@ -60,7 +56,6 @@ public class InfraStructuresExtensions extends MobileManager {
         }
     }
 
-    @Description("startActivity ")
     public void startActivity(String packageName, String activityName) {
         try {
             if (isAndroidClient()) {
@@ -71,7 +66,6 @@ public class InfraStructuresExtensions extends MobileManager {
         }
     }
 
-    @Description("activateApp ")
     public void activateApp(String packageName) {
         try {
             if (isAndroidClient()) {
@@ -96,7 +90,6 @@ public class InfraStructuresExtensions extends MobileManager {
         }
     }
 
-    @Description("pushFile")
     public void pushFile(String devicePath, String fileName) {
         try {
             if (isAndroidClient()) {
@@ -110,7 +103,6 @@ public class InfraStructuresExtensions extends MobileManager {
         }
     }
 
-    @Description("pushFile")
     public void pullFile(String devicePath) {
         try {
             if (isAndroidClient()) {
@@ -121,7 +113,6 @@ public class InfraStructuresExtensions extends MobileManager {
         }
     }
 
-    @Description("isAppInstalled")
     public boolean isAppInstalled(String bundleId) {
         try {
             if (isAndroidClient())
@@ -133,7 +124,6 @@ public class InfraStructuresExtensions extends MobileManager {
         return false;
     }
 
-    @Description("getDeviceTime")
     public String getDeviceTime(String format) {
         String time = "";
         try {
@@ -144,7 +134,6 @@ public class InfraStructuresExtensions extends MobileManager {
         return time;
     }
 
-    @Description("isOrientationIsPortrait")
     public boolean isOrientationIsPortrait() {
         try {
             String orientation = isAndroidClient() ? this.androidDriver().getOrientation().name() : this.iosDriver().getOrientation().name();
@@ -155,7 +144,6 @@ public class InfraStructuresExtensions extends MobileManager {
         return false;
     }
 
-    @Description("rotateDevice")
     public void rotateDevice(ScreenOrientation orientation) {
         try {
             if (isAndroidClient()) {
@@ -166,7 +154,6 @@ public class InfraStructuresExtensions extends MobileManager {
         }
     }
 
-    @Description("getAutomationName")
     public String getAutomationName() {
         String automationName = "";
         try {
@@ -180,7 +167,6 @@ public class InfraStructuresExtensions extends MobileManager {
         return automationName;
     }
 
-    @Description("changeContext")
     public void changeContextTo(String context) {
         try {
             if (isAndroidClient()) {
@@ -196,7 +182,6 @@ public class InfraStructuresExtensions extends MobileManager {
     }
 
     @SuppressWarnings("rawtypes")
-    @Description("getContextHandles")
     public Set getContextHandles() {
         Set contexts = new HashSet<>();
         try {
@@ -212,7 +197,6 @@ public class InfraStructuresExtensions extends MobileManager {
         return contexts;
     }
 
-    @Description("getAppContext")
     public String getAppContext() {
         String contexts = "";
         try {
@@ -228,7 +212,6 @@ public class InfraStructuresExtensions extends MobileManager {
         return contexts;
     }
 
-    @Description("isDeviceIsLocked")
     public boolean isDeviceIsLocked() {
         try {
             if (isAndroidClient()) {
@@ -242,7 +225,6 @@ public class InfraStructuresExtensions extends MobileManager {
         return false;
     }
 
-    @Description("lockDevice")
     public void lockDevice(long mils) {
         try {
             if (isAndroidClient()) {

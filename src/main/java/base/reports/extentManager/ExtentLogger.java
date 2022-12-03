@@ -6,6 +6,7 @@ import base.reports.ReportTestRepository;
 import base.reports.testFilters.Reasons;
 import base.reports.testFilters.ReasonsStep;
 import base.reports.testFilters.TestCategory;
+import base.reports.testFilters.TestSeverity;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.CodeLanguage;
@@ -27,6 +28,9 @@ import java.util.Optional;
 @Slf4j
 public final class ExtentLogger {
 
+    public static void reportTest(Status status, String desc) {
+        reportTest(new Reasons(status,"","", TestCategory.NONE, TestSeverity.NONE, desc));
+    }
     public static void reportTest(Reasons reportTestDto) {
         ReportTestRepository.getInstance().save(reportTestDto);
         ExtentLogger.loggerPrint(reportTestDto.getTestStatus(), "report description: " + reportTestDto.getDescription());

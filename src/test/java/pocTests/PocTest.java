@@ -16,7 +16,7 @@ import org.testng.annotations.*;
 
 @Listeners(value = { MobileListener.class, MobileAnnotationRetryListener.class})
 @CreateReportExtra(
-        reportStatus = { Status.FAIL},
+        reportStatus = { Status.FAIL },
         filterBy = { TestCategory.DRIVER })
 public class PocTest extends StepFlowExtensions {
 
@@ -36,7 +36,7 @@ public class PocTest extends StepFlowExtensions {
 
     @OnFailRetry(2)
     @Test(priority = 1, description = "123456 first test poc", retryAnalyzer = MobileRetryAnalyzer.class)
-    @TestTarget(testId = "123456", author = {"aviad"}, category = { CategoryType.SANITY, CategoryType.REGRESSION}, suiteName = "login")
+    @TestTarget(testId = "123456", author = {"aviad"}, category = { CategoryType.SANITY, CategoryType.REGRESSION }, suiteName = "login")
     public void firstTestPoc() {
         this.stepFlow.steps("1-2", "click on user name edit text", (action) -> {
                     action.clickElementExtensions
@@ -84,4 +84,6 @@ public class PocTest extends StepFlowExtensions {
                             .clickElement(By.id(loginEle), "login user name");
                 });
     }
+
+
 }

@@ -9,14 +9,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 @Slf4j
 public class JsonWriterExtensions extends MobileManager {
     private final File file;
     private final ObjectMapper objectMapper;
 
     /**
-     *
      * @param file
      */
     public JsonWriterExtensions(File file) {
@@ -25,7 +23,6 @@ public class JsonWriterExtensions extends MobileManager {
     }
 
     /**
-     *
      * @return
      */
     public ObjectMapper getObjectMapper() {
@@ -39,7 +36,6 @@ public class JsonWriterExtensions extends MobileManager {
     }
 
     /**
-     *
      * @param dtoObject
      * @param dtoObjectClass
      * @param <T>
@@ -58,7 +54,6 @@ public class JsonWriterExtensions extends MobileManager {
     }
 
     /**
-     *
      * @param dtoObjectList
      * @param dtoObjectClass
      * @param <T>
@@ -67,10 +62,13 @@ public class JsonWriterExtensions extends MobileManager {
     public <T> JsonWriterExtensions readAndWrite(List<T> dtoObjectList, Class<T> dtoObjectClass) {
         try {
 
-            List<T> dataList = new ArrayList<>();
             JsonReaderExtensions jsonReaderExtensions = new JsonReaderExtensions(this.file);
-            dataList.addAll(jsonReaderExtensions.readAndReturnJsonListOf(dtoObjectClass));
+            List<T> dataList = new ArrayList<>(jsonReaderExtensions.readAndReturnJsonListOf(dtoObjectClass));
+            int jsonUpdateList1 = dataList.size();
             dataList.addAll(dtoObjectList);
+            if (jsonUpdateList1 < dataList.size()) {
+                log.debug("file " + this.file.getName() + " has updated");
+            }
             this.writeToJson(dataList);
             return this;
 
@@ -82,7 +80,6 @@ public class JsonWriterExtensions extends MobileManager {
     }
 
     /**
-     *
      * @param newDataList
      * @param <T>
      */
@@ -95,7 +92,6 @@ public class JsonWriterExtensions extends MobileManager {
     }
 
     /**
-     *
      * @param newDataList
      * @param <T>
      */
@@ -108,7 +104,6 @@ public class JsonWriterExtensions extends MobileManager {
     }
 
     /**
-     *
      * @param newDataList
      * @param <T>
      */

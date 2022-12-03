@@ -37,12 +37,9 @@ public class JsonReaderExtensions extends MobileManager {
 
         try {
 
-            if (this.file.exists()) {
+            if (this.file != null && this.file.exists()) {
                 List<T> entryOldDtoList = this.readAllJson(setLogEntryDto);
-                if (!entryOldDtoList.isEmpty()) {
-                    entryDtoList.addAll(entryOldDtoList);
-                    log.debug("file " + this.file.getName() + " has updated");
-                }
+                if (!entryOldDtoList.isEmpty()) entryDtoList.addAll(entryOldDtoList);
                 return entryDtoList;
             }
 

@@ -4,6 +4,7 @@ import base.repository.MongoBase;
 import base.repository.MongoConnection;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.InsertManyOptions;
 import com.mongodb.client.result.UpdateResult;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +21,10 @@ public class MongoCollectionReactiveRepoImpl implements
         MongoCollectionReactiveRepo.OnUpdate,
         MongoCollectionReactiveRepo.OnSearchBy,
         MongoCollectionReactiveRepo.OnSearch {
-
     private final MongoBase mongoBase;
-
     public MongoCollectionReactiveRepoImpl(MongoConnection mongoConnection, String collectionName) {
         this.mongoBase = new MongoBase(mongoConnection, collectionName);
     }
-
     @Override
     public Mono<Boolean> deleteElement(Bson bson) {
         try {
