@@ -1,12 +1,16 @@
 package base.excelReader;
 
-import com.codoid.products.exception.FilloException;
 import com.codoid.products.fillo.Recordset;
+import org.javatuples.Pair;
+import org.javatuples.Quartet;
+import org.javatuples.Sextet;
+import org.javatuples.Triplet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +73,6 @@ public class ExcelDbReaderExtensionsTest {
         List<ClassPogo> classPogoList = new ArrayList<>();
 
         try {
-
             while (getData.next()) {
                 classPogo = new ClassPogo(
                         getData.getField("id"),
@@ -77,11 +80,87 @@ public class ExcelDbReaderExtensionsTest {
                         getData.getField("userPassword"));
                 classPogoList.add(classPogo);
             }
-
         } catch (Exception e) {
             logger.info(e.getMessage());
         }
 
         return classPogoList;
+    }
+
+    public List<Pair<String, String>> asPair(
+            Recordset recordset, Pair<String,String> pair) {
+        List<Pair<String, String>> setList = new ArrayList<>();
+
+        try {
+            while (recordset.next()) {
+                setList.add(new Pair<>(recordset.getField(pair.getValue0()), recordset.getField(pair.getValue1())));
+            }
+        } catch (Exception exception) {
+            //
+        }
+
+        return setList;
+    }
+    public List<Triplet<String, String, String>> asTriplet(
+            Recordset recordset, Triplet<String,String,String> triplet) {
+        List<Triplet<String, String, String>> setList = new ArrayList<>();
+
+        try {
+            while (recordset.next()) {
+                setList.add(new Triplet<>(
+                        recordset.getField(triplet.getValue0()),
+                        recordset.getField(triplet.getValue1()),
+                        recordset.getField(triplet.getValue2())
+                ));
+            }
+        } catch (Exception exception) {
+            //
+        }
+
+        return setList;
+    }
+    public List<Quartet<String, String, String, String>> asQuartet(
+            Recordset recordset,
+            Quartet<String,String,String,String> quartet) {
+
+        List<Quartet<String, String, String, String>> setList = new ArrayList<>();
+
+        try {
+            while (recordset.next()) {
+                setList.add(new Quartet<>(
+                        recordset.getField(quartet.getValue0()),
+                        recordset.getField(quartet.getValue1()),
+                        recordset.getField(quartet.getValue2()),
+                        recordset.getField(quartet.getValue3())
+                ));
+            }
+        } catch (Exception exception) {
+            //
+        }
+
+        return setList;
+    }
+
+    public List<Sextet<String, String, String, String, String,String>> asSextet(
+            Recordset recordset,
+            Sextet<String,String,String,String,String,String> sextet) {
+
+        List<Sextet<String, String, String, String, String, String>> setList = new ArrayList<>();
+        try {
+            while (recordset.next()) {
+                setList.add(new Sextet<>(
+                        recordset.getField(sextet.getValue0()),
+                        recordset.getField(sextet.getValue1()),
+                        recordset.getField(sextet.getValue2()),
+                        recordset.getField(sextet.getValue3()),
+                        recordset.getField(sextet.getValue4()),
+                        recordset.getField(sextet.getValue5())
+                ));
+            }
+        } catch (Exception exception) {
+            //
+        }
+
+        return setList;
     }
 }
