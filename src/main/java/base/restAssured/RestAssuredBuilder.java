@@ -2,9 +2,10 @@ package base.restAssured;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.springframework.web.util.UriComponentsBuilder;
+import io.restassured.specification.RequestSpecification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +14,9 @@ import static io.restassured.RestAssured.given;
 
 public class RestAssuredBuilder {
     public static class GetBuilder {
-        private String baseUri;
-        private ContentType setContentType;
-        private String setPath;
+        private String baseUri = "";
+        private String setPath = "";
+        private ContentType setContentType = null;
         private Map<String,String> setQueryParams = new HashMap<>();
         private Map<String,String> setHeaders = new HashMap<>();
 
@@ -68,12 +69,13 @@ public class RestAssuredBuilder {
         }
     }
     public static class PostBuilder {
-        private String baseUri;
-        private String setPath;
-        private HashMap<String,String> setBody = new HashMap<>();
-        private ContentType setContentType;
+        private String baseUri = "";
+        private String setPath = "";
+        private Map<String,String> setBody = new HashMap<>();
+        private ContentType setContentType = null;
         private Map<String,String> setQueryParams = new HashMap<>();
         private Map<String,String> setHeaders = new HashMap<>();
+
         public PostBuilder setBaseUri(String baseUri) {
             this.baseUri = baseUri;
             return this;
@@ -92,7 +94,7 @@ public class RestAssuredBuilder {
             return this;
         }
 
-        public PostBuilder setBody(HashMap<String,String> setBody) {
+        public PostBuilder setBody(Map<String,String> setBody) {
             this.setBody = setBody;
             return this;
         }
@@ -102,7 +104,7 @@ public class RestAssuredBuilder {
             return this;
         }
 
-        public Response build() {
+        public Response getResponse() {
             RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder();
             requestSpecBuilder.setBaseUri(this.baseUri);
 
@@ -122,15 +124,19 @@ public class RestAssuredBuilder {
                 requestSpecBuilder.addHeaders(this.setHeaders);
             }
 
-            return given().spec(requestSpecBuilder.setBody(this.setBody).build()).post();
+            return RestAssured
+                    .given()
+                    .spec(requestSpecBuilder.setBody(this.setBody).build())
+                    .post();
         }
     }
 
+
     public static class PutBuilder {
-        private String baseUri;
-        private String setPath;
+        private String baseUri = "";
+        private String setPath = "";
         private HashMap<String,String> setBody = new HashMap<>();
-        private ContentType setContentType;
+        private ContentType setContentType = null;
         private Map<String,String> setQueryParams = new HashMap<>();
         private Map<String,String> setHeaders = new HashMap<>();
 

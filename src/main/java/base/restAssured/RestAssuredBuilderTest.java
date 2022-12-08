@@ -1,44 +1,100 @@
 package base.restAssured;
 
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
+import lombok.extern.slf4j.Slf4j;
+import org.hamcrest.Matchers;
+import org.springframework.http.HttpStatus;
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import java.util.HashMap;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+
+@Slf4j
 public class RestAssuredBuilderTest {
 
     @Test
     public void testGet() {
         HashMap<String, String> params = new HashMap<>();
         params.put("postId","2");
-        Response getBuilder = new RestAssuredBuilder.GetBuilder()
+        Response response = new RestAssuredBuilder.GetBuilder()
                 .setBaseUri("https://jsonplaceholder.typicode.com")
-                .setContentType(ContentType.JSON)
                 .setPath("/comments")
+                .setContentType(ContentType.JSON)
                 .setQueryParams(params)
                 .build();
 
-        ResponseBody<?> responseBody = getBuilder.body();
-        System.out.println(responseBody.prettyPrint());
+        int statusCode = response.getStatusCode();
+        Assert.assertEquals(statusCode, 200,"status code return 200 response");
+
+        JsonPath jsonPathEvaluator = response.jsonPath();
+        log.info(jsonPathEvaluator.get("id").toString());
+
+        ResponseBody<?> responseBody = response.body();
+        log.info(responseBody.prettyPrint());
     }
 
     @Test
-    public void testPost() {
-        HashMap<String,String> body = new HashMap<>();
-        body.put("title","foo");
-        body.put("body","1");
-        body.put("userId","1");
-
-        Response getBuilder = new RestAssuredBuilder.PostBuilder()
+    public void testPost() throws ExecutionException, InterruptedException {
+        Response response = new RestAssuredBuilder.PostBuilder()
                 .setBaseUri("https://jsonplaceholder.typicode.com")
                 .setContentType(ContentType.JSON)
                 .setPath("/posts")
-                .setBody(body)
-                .build();
+                .setBody(Map.of("title", "foo", "body", "1", "userId", "1"))
+                .getResponse();
 
-        ResponseBody<?> responseBody = getBuilder.body();
-        System.out.println(responseBody.prettyPrint());
+        // headers response
+        List<Header> headersList = response.headers().asList();
+        headersList.forEach(header -> log.info(header.getName() + " | " + header.getValue()));
+        response.headers().getValue("");
+
+        //print json body
+        ResponseBody<?> responseBody = response.body();
+        log.info(responseBody.prettyPrint());
+
+        //get single value from json
+        JsonPath jsonPath = response.jsonPath();
+        log.info(jsonPath.get("title").toString());
+        if (Matchers.matchesRegex("^[a-z0-9]+$").matches(jsonPath.get("title").toString())) {
+            log.info("find");
+        }
+
+        if (Matchers.greaterThan(0).matches(jsonPath.get("id").toString())) {
+            log.info("find");
+        }
+        //print response time
+        long responseTime = response.getTime();
+        log.info("Response time in milliseconds: " + responseTime);
+
+        //get a field value from nested JSON
+        String price = jsonPath.getString("Items.Price");
+        log.info("Price is: " + price);
+
+        //convert JSON to string
+        JsonPath jsonPath1 = new JsonPath(response.asString());
+
+        //Zip for 2nd Location array
+        String zip = jsonPath1.getString("Location[1].zip");
+
+        response.then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("title", equalTo("foo"), "body", equalTo("1"), "userId", equalTo("1"), "id", equalTo(101))
+                .body("token", Matchers.matchesRegex("^[a-z0-9]+$"))
+                .body("bookingid", Matchers.hasItems(91,10));
     }
 
     @Test
@@ -57,6 +113,6 @@ public class RestAssuredBuilderTest {
                 .build();
 
         ResponseBody<?> responseBody = getBuilder.body();
-        System.out.println(responseBody.prettyPrint());
+        log.info(responseBody.prettyPrint());
     }
 }
