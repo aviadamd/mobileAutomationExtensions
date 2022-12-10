@@ -13,9 +13,8 @@ import java.util.stream.Collectors;
 public class ReportTestRepository {
     private static ReportTestRepository mInstance = null;
     public static ReportTestRepository getInstance() {
-        if (mInstance == null) {
+        if (mInstance == null)
             mInstance = new ReportTestRepository();
-        }
         return mInstance;
     }
 

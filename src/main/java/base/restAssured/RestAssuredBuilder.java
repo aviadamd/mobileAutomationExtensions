@@ -2,11 +2,8 @@ package base.restAssured;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-
 import java.util.HashMap;
 import java.util.Map;
 

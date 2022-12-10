@@ -179,7 +179,7 @@ public final class ExtentLogger {
         });
     }
 
-        public static void addCategory(String testCategory) {
+    public static void addCategory(String testCategory) {
         Optional.ofNullable(testCategory).ifPresent(category -> {
             ExtentReportManager.getExtentTest().get().assignCategory(testCategory);
         });
