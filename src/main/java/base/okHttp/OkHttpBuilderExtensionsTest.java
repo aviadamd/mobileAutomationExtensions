@@ -1,5 +1,6 @@
 package base.okHttp;
 
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.testng.annotations.BeforeClass;
@@ -51,8 +52,8 @@ public class OkHttpBuilderExtensionsTest {
                         .build())
                 .headers(headers)
                 .post(body);
-        ResponseCollector response = this.okHttpBuilderExtensions.setRequestBuilder(request).build();
 
+        ResponseCollector response = this.okHttpBuilderExtensions.setRequestBuilder(request).build();
         if (response.isPassRequest()) {
 
             log.info("request " + response.getResponse().request().url());
