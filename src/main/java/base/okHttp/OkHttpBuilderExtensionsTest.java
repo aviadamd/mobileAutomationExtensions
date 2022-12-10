@@ -51,7 +51,6 @@ public class OkHttpBuilderExtensionsTest {
                         .build())
                 .headers(headers)
                 .post(body);
-
         ResponseCollector response = this.okHttpBuilderExtensions.setRequestBuilder(request).build();
 
         if (response.isPassRequest()) {
