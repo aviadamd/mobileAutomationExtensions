@@ -1,11 +1,11 @@
 package base.okHttp;
 
-import com.google.gson.Gson;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
 import okhttp3.*;
+
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.util.*;
@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class OkHttpBuilderExtensions {
 
+    private OkHttpClient okHttpClientInstance;
     private Request.Builder requestBuilder = new Request.Builder();
 
     public OkHttpBuilderExtensions setRequestBuilder(Request.Builder requestBuilder) {
@@ -34,8 +35,11 @@ public class OkHttpBuilderExtensions {
 
         try {
 
-            response = Optional.ofNullable(Observable.just(
-                    this.okHttpClient().newCall(this.requestBuilder.build()).execute())
+            if (this.okHttpClientInstance == null) {
+                this.okHttpClientInstance = this.okHttpClient();
+            }
+
+            response = Optional.ofNullable(Observable.just(this.okHttpClientInstance.newCall(this.requestBuilder.build()).execute())
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.newThread())
                     .blockingFirst());
@@ -52,30 +56,36 @@ public class OkHttpBuilderExtensions {
         return new ResponseCollector(false, null, "");
     }
     private OkHttpClient okHttpClient() {
-        return new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
+        OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
+
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[] { TRUST_ALL_CERTS }, new java.security.SecureRandom());
+            builder.sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) TRUST_ALL_CERTS);
+        } catch (Exception exception) {
+            log.info("init okHttpClient ssl trust factory error: " + exception.getMessage());
+        }
+
+        return builder.connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor(new LoggingInterceptor())
+                .addInterceptor(new OkHttpLoggingInterceptor())
                 .build();
     }
 
-    static {
-        TrustManager[] trustAllCerts = new TrustManager[]{
-                new X509TrustManager() {
-                    @Override
-                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                    }
+    private final TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
+        @Override
+        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+        }
 
-                    @Override
-                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                    }
+        @Override
+        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+        }
 
-                    @Override
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return new java.security.cert.X509Certificate[]{};
-                    }
-                }
-        };
-    }
+        @Override
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return new java.security.cert.X509Certificate[] {};
+        }
+    };
+
 }
