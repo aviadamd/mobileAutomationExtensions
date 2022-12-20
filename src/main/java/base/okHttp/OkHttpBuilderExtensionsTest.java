@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
@@ -40,7 +42,7 @@ public class OkHttpBuilderExtensionsTest {
     }
 
     @Test
-    public void testPostRequest() {
+    public void testPostRequest() throws IOException {
         Headers headers = Headers.of(Map.of("Content-Type","application/json"));
         FormBody body = this.okHttpBuilderExtensions.setBodyMap(false, Map.of("title","foo","body","1","userId","1"));
 
@@ -53,18 +55,9 @@ public class OkHttpBuilderExtensionsTest {
                 .headers(headers)
                 .post(body);
 
-        ResponseCollector response = this.okHttpBuilderExtensions.setRequestBuilder(request).build();
-        if (response.isPassRequest()) {
-
-            log.info("request " + response.getResponse().request().url());
-            log.info("code " + response.getResponse().code());
-
-            response.getResponse().headers().toMultimap().forEach((key, values) -> {
-                log.info("headers key " + key);
-                log.info("headers values " + values.toString());
-            });
-
-            log.info(" " + response.getResponseData().getResponseBody());
+        ResponseCollector responseCollector = this.okHttpBuilderExtensions.setRequestBuilder(request).build();
+        try (ResponseBody responseBody = responseCollector.getResponse().peekBody(Long.MAX_VALUE)) {
+            log.info(responseBody.string());
         }
     }
 }

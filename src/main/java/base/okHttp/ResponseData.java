@@ -1,6 +1,5 @@
 package base.okHttp;
 
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import java.util.*;
@@ -14,7 +13,7 @@ public class ResponseData {
         try {
             this.code = response.code();
             this.headersMap = response.headers().toMultimap();
-            this.responseBody = response.body().string();
+            this.responseBody = response.peekBody(Long.MAX_VALUE).string();
         } catch (Exception exception) {
             log.error(exception.getMessage());
         }

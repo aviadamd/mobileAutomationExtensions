@@ -5,15 +5,12 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class OkHttpBuilderExtensions {
-
     private OkHttpClient okHttpClientInstance;
     private Request.Builder requestBuilder = new Request.Builder();
 
@@ -60,26 +57,34 @@ public class OkHttpBuilderExtensions {
 
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[] { TRUST_ALL_CERTS }, new java.security.SecureRandom());
+            sslContext.init(null, new TrustManager[]{ TRUST_ALL_CERTS }, new java.security.SecureRandom());
             builder.sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) TRUST_ALL_CERTS);
+            builder.hostnameVerifier((s, sslSession) -> true);
         } catch (Exception exception) {
             log.info("init okHttpClient ssl trust factory error: " + exception.getMessage());
+        }
+
+        try {
+            builder.addInterceptor(new OkHttpLoggingInterceptor());
+        } catch (Exception exception) {
+            log.info("init okHttpClient addInterceptor error: " + exception.getMessage());
         }
 
         return builder.connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor(new OkHttpLoggingInterceptor())
                 .build();
     }
 
     private final TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
         @Override
         public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+            Arrays.asList(chain).forEach(print -> log.info("checkClientTrusted.getSigAlgName" + print.getSigAlgName()));
         }
 
         @Override
         public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+            Arrays.asList(chain).forEach(print -> log.info("checkServerTrusted.getSigAlgName" + print.getSigAlgName() + ", authType " + authType));
         }
 
         @Override

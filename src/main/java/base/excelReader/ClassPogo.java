@@ -3,27 +3,28 @@ package base.excelReader;
 public class ClassPogo {
     private String id;
     private String userName;
-    private String userPass;
-    public ClassPogo(String id, String userName, String userPass) {
+    private String userPassword;
+
+    public ClassPogo() {}
+    public ClassPogo(String id, String userName, String userPassword) {
         this.id = id;
         this.userName = userName;
-        this.userPass = userPass;
+        this.userPassword = userPassword;
     }
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id;}
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName;}
-    public String getUserPass() { return userPass; }
-    public void setUserPass(String userPass) { this.userPass = userPass; }
+    public String getUserPassword() { return userPassword; }
+    public void setUserPassword(String userPassword) { this.userPassword = userPassword; }
 
     @Override
     public String toString() {
         return "ClassPogo{" +
                 "id='" + id + '\'' +
                 ", userName='" + userName + '\'' +
-                ", userPass='" + userPass + '\'' +
+                ", userPassword='" + userPassword + '\'' +
                 '}';
     }
-
 }

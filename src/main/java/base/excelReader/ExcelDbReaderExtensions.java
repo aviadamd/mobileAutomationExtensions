@@ -1,14 +1,22 @@
 package base.excelReader;
 
+import com.codoid.products.exception.FilloException;
 import com.codoid.products.fillo.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Slf4j
 public class ExcelDbReaderExtensions {
     private static final Logger logger = LoggerFactory.getLogger(ExcelDbReaderExtensions.class);
+
     public static class UpdateQueryBuilder {
         private Connection connection;
         private Fillo reader;
@@ -85,26 +93,37 @@ public class ExcelDbReaderExtensions {
         }
 
         public Recordset build() { return recordset; }
+        public void close() {
+            if (this.recordset != null) this.recordset.close();
+        }
+    }
+
+    public static <T> MultiValuedMap<Integer, List<String>> queryResultMap(Recordset recordset, Class<T> objectClass) {
+        MultiValuedMap<Integer, List<String>> setObjectMap = new ArrayListValuedHashMap<>();
+        try {
+            int i = 1;
+            Field[] fieldsList = objectClass.getDeclaredFields();
+            while (recordset.next()) {
+                List<String> getFields = Stream.of(fieldsList)
+                        .map(field -> {
+                            try {
+                                return recordset.getField(field.getName());
+                            } catch (FilloException e) {
+                                return "";
+                            }
+                        })
+                        .collect(Collectors.toList());
+                setObjectMap.put(i, getFields);
+                i++;
+            }
+        } catch (Exception exception) {
+            log.error(exception.getMessage());
+        }
+        return setObjectMap;
     }
 
     protected static void printError(Exception exception, String from) {
         logger.error("Error " + exception + ", from " + from);
     }
-    public static List<String> getData(Recordset setQuery, List<String> getFields) {
-        List<String> collect = new ArrayList<>();
-        try {
-            if (setQuery != null) {
-                while (setQuery.next()) {
-                    for (String field: getFields) {
-                        if (setQuery.getField(field) != null) {
-                            collect.add(setQuery.getField(field));
-                        }
-                    }
-                }
-            }
-        } catch (Exception exception) {
-            printError(exception,"getData");
-        }
-        return collect;
-    }
+
 }

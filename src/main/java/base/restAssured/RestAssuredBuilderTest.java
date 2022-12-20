@@ -2,6 +2,7 @@ package base.restAssured;
 
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
+import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
@@ -13,7 +14,6 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 @Slf4j
@@ -23,12 +23,12 @@ public class RestAssuredBuilderTest {
     public void testGet() {
         HashMap<String, String> params = new HashMap<>();
         params.put("postId","2");
-        Response response = new RestAssuredBuilder.GetBuilder()
+        Response response = new RestAssuredBuilder.RequestBuilder()
                 .setBaseUri("https://jsonplaceholder.typicode.com")
                 .setPath("/comments")
                 .setContentType(ContentType.JSON)
                 .setQueryParams(params)
-                .build();
+                .getResponse(Method.GET);
 
         int statusCode = response.getStatusCode();
         Assert.assertEquals(statusCode, 200,"status code return 200 response");
@@ -39,16 +39,17 @@ public class RestAssuredBuilderTest {
         ResponseBody<?> responseBody = response.body();
         log.info(responseBody.prettyPrint());
     }
-
     @Test
-    public void testPost() throws ExecutionException, InterruptedException {
-        Response response = new RestAssuredBuilder.PostBuilder()
+    public void testPost() {
+        Response response = new RestAssuredBuilder.RequestBuilder()
                 .setBaseUri("https://jsonplaceholder.typicode.com")
                 .setContentType(ContentType.JSON)
                 .setPath("/posts")
                 .setBody(Map.of("title", "foo", "body", "1", "userId", "1"))
-                .getResponse();
+                .getResponse(Method.POST);
 
+        JsonPath asJsonPath = new RestAssuredBuilder().getJsonPath(response);
+        asJsonPath.prettyPeek();
         // headers response
         List<Header> headersList = response.headers().asList();
         headersList.forEach(header -> log.info(header.getName() + " | " + header.getValue()));
@@ -98,12 +99,12 @@ public class RestAssuredBuilderTest {
         body.put("userId","1");
         body.put("id", "1");
 
-        Response getBuilder = new RestAssuredBuilder.PutBuilder()
+        Response getBuilder = new RestAssuredBuilder.RequestBuilder()
                 .setBaseUri("https://jsonplaceholder.typicode.com")
                 .setContentType(ContentType.JSON)
                 .setPath("/posts/1")
                 .setBody(body)
-                .build();
+                .getResponse(Method.PUT);
 
         ResponseBody<?> responseBody = getBuilder.body();
         log.info(responseBody.prettyPrint());
